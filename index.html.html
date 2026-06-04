@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life OS</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f13;
+    --bg2: #16161c;
+    --bg3: #1e1e28;
+    --bg4: #26263200;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #5a5a72;
+    --accent: #7c6af7;
+    --accent2: #a78bfa;
+    --accent-bg: rgba(124,106,247,0.12);
+    --green: #34d399;
+    --green-bg: rgba(52,211,153,0.1);
+    --amber: #fbbf24;
+    --amber-bg: rgba(251,191,36,0.1);
+    --red: #f87171;
+    --red-bg: rgba(248,113,113,0.1);
+    --blue: #60a5fa;
+    --blue-bg: rgba(96,165,250,0.1);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* CONFIG SCREEN */
+  #config-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: radial-gradient(ellipse at 30% 40%, rgba(124,106,247,0.08) 0%, transparent 60%);
+  }
+  .config-card {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: var(--shadow);
+  }
+  .config-logo {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 0.25rem;
+    letter-spacing: -1px;
+  }
+  .config-sub {
+    color: var(--text2);
+    font-size: 13px;
+    margin-bottom: 2rem;
+  }
+  .config-label {
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .config-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 13px;
+    padding: 10px 14px;
+    margin-bottom: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    direction: ltr;
+  }
+  .config-input:focus { border-color: var(--accent); }
+  .config-note {
+    background: var(--accent-bg);
+    border: 1px solid rgba(124,106,247,0.2);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+    direction: rtl;
+    text-align: right;
+  }
+  .config-note strong { color: var(--accent2); }
+  .config-note a { color: var(--accent2); }
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:active { transform: scale(0.99); }
+  .config-error { color: var(--red); font-size: 12px; margin-top: 8px; text-align: center; }
+
+  /* MAIN APP */
+  #app { display: none; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed;
+    right: 0; top: 0; bottom: 0;
+    width: 220px;
+    background: var(--bg2);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+    z-index: 100;
+  }
+  .sidebar-logo {
+    padding: 0 1.25rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent2);
+    letter-spacing: -0.5px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 1.25rem;
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 13px;
+    transition: all 0.15s;
+    border-radius: 0;
+    margin: 0 8px;
+    border-radius: var(--radius-sm);
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: var(--accent-bg); color: var(--accent2); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 1rem 1.25rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .today-date {
+    font-size: 11px;
+    color: var(--text3);
+    text-align: center;
+    padding-top: 0.75rem;
+  }
+
+  /* MAIN CONTENT */
+  .main {
+    margin-right: 220px;
+    padding: 2rem 2.5rem;
+    max-width: 960px;
+  }
+  .page { display: none; }
+  .page.active { display: block; }
+  .page-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .page-sub { font-size: 13px; color: var(--text2); margin-bottom: 2rem; }
+
+  /* CARDS GRID */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .stat-value { font-size: 1.8rem; font-weight: 700; line-height: 1; }
+  .stat-value.green { color: var(--green); }
+  .stat-value.amber { color: var(--amber); }
+  .stat-value.accent { color: var(--accent2); }
+  .stat-value.blue { color: var(--blue); }
+
+  /* SECTION */
+  .section { margin-bottom: 2rem; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .section-title { font-size: 14px; font-weight: 600; color: var(--text); }
+
+  /* TASK ITEM */
+  .task-list { display: flex; flex-direction: column; gap: 6px; }
+  .task-item {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: border-color 0.2s;
+  }
+  .task-item:hover { border-color: var(--border2); }
+  .task-item.done { opacity: 0.45; }
+  .task-item.done .task-title { text-decoration: line-through; }
+  .task-check {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--border2);
+    border-radius: 50%;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    font-size: 10px;
+  }
+  .task-check.checked { background: var(--green); border-color: var(--green); color: var(--bg); }
+  .task-title { flex: 1; font-size: 13px; color: var(--text); }
+  .task-meta { font-size: 11px; color: var(--text3); white-space: nowrap; }
+  .task-del {
+    background: none; border: none; color: var(--text3);
+    cursor: pointer; font-size: 16px; padding: 2px 4px;
+    border-radius: 4px; transition: color 0.15s;
+    opacity: 0;
+  }
+  .task-item:hover .task-del { opacity: 1; }
+  .task-del:hover { color: var(--red); }
+
+  /* PRIORITY BADGE */
+  .badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .badge.high { background: var(--red-bg); color: var(--red); }
+  .badge.medium { background: var(--amber-bg); color: var(--amber); }
+  .badge.low { background: var(--green-bg); color: var(--green); }
+  .badge.work { background: var(--blue-bg); color: var(--blue); }
+  .badge.personal { background: var(--accent-bg); color: var(--accent2); }
+
+  /* ADD FORM */
+  .add-form {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .form-row:last-child { margin-bottom: 0; }
+  .form-input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 13px;
+    padding: 8px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    flex: 1;
+    min-width: 120px;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 13px;
+    padding: 8px 12px;
+    outline: none;
+    cursor: pointer;
+  }
+  .btn-add {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .btn-add:hover { opacity: 0.85; }
+  .btn-sm {
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-sm:hover { border-color: var(--accent); color: var(--accent2); }
+
+  /* HABITS */
+  .habit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .habit-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+  .habit-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .habit-name { font-size: 14px; font-weight: 600; }
+  .habit-streak { font-size: 11px; color: var(--amber); background: var(--amber-bg); padding: 3px 8px; border-radius: 20px; }
+  .habit-week {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+  }
+  .habit-day {
+    flex: 1;
+    height: 28px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .habit-day.done { background: var(--green); border-color: var(--green); color: var(--bg); }
+  .habit-day.today-marker { border-color: var(--accent); color: var(--accent2); }
+
+  /* PROJECTS */
+  .project-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .project-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .project-name { font-size: 15px; font-weight: 600; flex: 1; }
+  .progress-bar {
+    height: 4px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+  .project-stats { display: flex; gap: 1rem; font-size: 12px; color: var(--text3); }
+
+  /* PLANNER */
+  .time-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .time-block {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .time-label {
+    width: 50px;
+    font-size: 11px;
+    color: var(--text3);
+    text-align: left;
+    flex-shrink: 0;
+    padding-top: 10px;
+    direction: ltr;
+  }
+  .time-slot {
+    flex: 1;
+    min-height: 44px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+  }
+  .time-slot:hover { border-color: var(--accent); }
+  .time-slot.has-event {
+    background: var(--accent-bg);
+    border-color: rgba(124,106,247,0.3);
+    color: var(--accent2);
+  }
+  .time-slot.editing {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text3);
+    font-size: 13px;
+  }
+  .empty-icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.4; }
+
+  /* LOADING */
+  .loading { text-align: center; padding: 2rem; color: var(--text2); font-size: 13px; }
+
+  /* TOAST */
+  #toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 999;
+    pointer-events: none;
+    box-shadow: var(--shadow);
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200;
+    backdrop-filter: blur(4px);
+  }
+  .modal-card {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 440px;
+    box-shadow: var(--shadow);
+  }
+  .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 1.25rem; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
+  .btn-cancel {
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .sidebar { width: 60px; }
+    .sidebar-logo, .nav-label, .sidebar-bottom, .today-date { display: none; }
+    .nav-item { justify-content: center; padding: 12px; }
+    .nav-icon { width: auto; }
+    .main { margin-right: 60px; padding: 1.25rem; }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border2); }
+</style>
+</head>
+<body>
+
+<!-- CONFIG SCREEN -->
+<div id="config-screen">
+  <div class="config-card">
+    <div class="config-logo">⚡ Life OS</div>
+    <div class="config-sub">سیستم مدیریت زندگی شخصی</div>
+
+    <div class="config-note">
+      <strong>راه‌اندازی Supabase (رایگان):</strong><br>
+      ۱. به <a href="https://supabase.com" target="_blank">supabase.com</a> برو و اکانت بساز<br>
+      ۲. یک Project جدید بساز<br>
+      ۳. از منوی <strong>Settings → API</strong>، مقادیر زیر رو کپی کن<br>
+      ۴. بعد از وارد کردن، دکمه راه‌اندازی رو بزن — جداول خودکار ساخته می‌شن
+    </div>
+
+    <label class="config-label">Supabase URL</label>
+    <input class="config-input" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" />
+
+    <label class="config-label">Supabase Anon Key</label>
+    <input class="config-input" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." />
+
+    <button class="btn-primary" onclick="initSupabase()">🚀 راه‌اندازی Life OS</button>
+    <div id="config-error" class="config-error"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">⚡ Life OS</div>
+    <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+      <span class="nav-icon">🏠</span><span class="nav-label">داشبورد</span>
+    </div>
+    <div class="nav-item" onclick="showPage('tasks')" id="nav-tasks">
+      <span class="nav-icon">✅</span><span class="nav-label">تسک‌ها</span>
+    </div>
+    <div class="nav-item" onclick="showPage('habits')" id="nav-habits">
+      <span class="nav-icon">🔥</span><span class="nav-label">عادت‌ها</span>
+    </div>
+    <div class="nav-item" onclick="showPage('projects')" id="nav-projects">
+      <span class="nav-icon">📁</span><span class="nav-label">پروژه‌ها</span>
+    </div>
+    <div class="nav-item" onclick="showPage('planner')" id="nav-planner">
+      <span class="nav-icon">📅</span><span class="nav-label">برنامه‌ریز</span>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="today-date" id="today-label"></div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">سلام 👋</div>
+      <div class="page-sub" id="dash-date"></div>
+      <div class="cards-grid" id="dash-stats"></div>
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">تسک‌های امروز</span>
+          <button class="btn-sm" onclick="showPage('tasks')">همه تسک‌ها</button>
+        </div>
+        <div id="dash-tasks" class="task-list"></div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">عادت‌های امروز</span>
+          <button class="btn-sm" onclick="showPage('habits')">مشاهده همه</button>
+        </div>
+        <div id="dash-habits" class="habit-grid"></div>
+      </div>
+    </div>
+
+    <!-- TASKS PAGE -->
+    <div class="page" id="page-tasks">
+      <div class="page-title">تسک‌ها</div>
+      <div class="page-sub">مدیریت وظایف کاری، شخصی و پروژه‌ای</div>
+
+      <div class="add-form">
+        <div class="form-row">
+          <input class="form-input" id="task-title" placeholder="عنوان تسک جدید..." style="flex:2" />
+        </div>
+        <div class="form-row">
+          <select class="form-select" id="task-cat">
+            <option value="work">💼 کاری</option>
+            <option value="personal">👤 شخصی</option>
+            <option value="project">📁 پروژه</option>
+          </select>
+          <select class="form-select" id="task-prio">
+            <option value="high">🔴 بالا</option>
+            <option value="medium" selected>🟡 متوسط</option>
+            <option value="low">🟢 پایین</option>
+          </select>
+          <input class="form-input" id="task-due" type="date" style="flex:0.7" />
+          <button class="btn-add" onclick="addTask()">+ افزودن</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">در انتظار انجام</span>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm" onclick="filterTasks('all')">همه</button>
+            <button class="btn-sm" onclick="filterTasks('work')">کاری</button>
+            <button class="btn-sm" onclick="filterTasks('personal')">شخصی</button>
+          </div>
+        </div>
+        <div id="tasks-pending" class="task-list"></div>
+      </div>
+      <div class="section">
+        <div class="section-header"><span class="section-title">انجام‌شده ✅</span></div>
+        <div id="tasks-done" class="task-list"></div>
+      </div>
+    </div>
+
+    <!-- HABITS PAGE -->
+    <div class="page" id="page-habits">
+      <div class="page-title">عادت‌ها</div>
+      <div class="page-sub">ردیابی روزانه عادت‌های مثبت</div>
+
+      <div class="add-form">
+        <div class="form-row">
+          <input class="form-input" id="habit-name" placeholder="نام عادت (مثلاً: مطالعه ۳۰ دقیقه)" />
+          <select class="form-select" id="habit-icon">
+            <option value="📚">📚 مطالعه</option>
+            <option value="🏃">🏃 ورزش</option>
+            <option value="💧">💧 آب خوردن</option>
+            <option value="🧘">🧘 مدیتیشن</option>
+            <option value="✍️">✍️ نوشتن</option>
+            <option value="🎯">🎯 هدف</option>
+            <option value="🌙">🌙 خواب</option>
+          </select>
+          <button class="btn-add" onclick="addHabit()">+ افزودن</button>
+        </div>
+      </div>
+
+      <div class="habit-grid" id="habits-list"></div>
+    </div>
+
+    <!-- PROJECTS PAGE -->
+    <div class="page" id="page-projects">
+      <div class="page-title">پروژه‌ها</div>
+      <div class="page-sub">پیگیری پروژه‌های بلندمدت</div>
+
+      <div class="add-form">
+        <div class="form-row">
+          <input class="form-input" id="proj-name" placeholder="نام پروژه..." />
+          <input class="form-input" id="proj-deadline" type="date" style="flex:0.6" />
+          <button class="btn-add" onclick="addProject()">+ پروژه جدید</button>
+        </div>
+      </div>
+
+      <div id="projects-list"></div>
+    </div>
+
+    <!-- PLANNER PAGE -->
+    <div class="page" id="page-planner">
+      <div class="page-title">برنامه‌ریز روزانه</div>
+      <div class="page-sub" id="planner-date-label"></div>
+      <div style="display:flex;gap:8px;margin-bottom:1.5rem;align-items:center">
+        <button class="btn-sm" onclick="changeDay(-1)">← روز قبل</button>
+        <input type="date" class="form-input" id="planner-date" style="flex:0;width:160px" onchange="loadPlanner()" />
+        <button class="btn-sm" onclick="changeDay(1)">روز بعد →</button>
+        <button class="btn-sm" onclick="goToday()">امروز</button>
+      </div>
+      <div class="time-blocks" id="time-blocks"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+let supabase_client = null;
+let allTasks = [];
+let allHabits = [];
+let allHabitLogs = [];
+let allProjects = [];
+let allProjectTasks = [];
+let plannerDate = new Date().toISOString().split('T')[0];
+let plannerSlots = {};
+let currentFilter = 'all';
+
+const DAYS_FA = ['ی','د','س','چ','پ','ج','ش'];
+const HOURS = ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'];
+
+// ─── CONFIG ───────────────────────────────────────────────
+async function initSupabase() {
+  const url = document.getElementById('sb-url').value.trim();
+  const key = document.getElementById('sb-key').value.trim();
+  if (!url || !key) { showConfigError('لطفاً هر دو فیلد را پر کن'); return; }
+  try {
+    supabase_client = window.supabase.createClient(url, key);
+    await setupTables();
+    localStorage.setItem('los_url', url);
+    localStorage.setItem('los_key', key);
+    document.getElementById('config-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initApp();
+  } catch(e) {
+    showConfigError('خطا در اتصال: ' + e.message);
+  }
+}
+
+async function setupTables() {
+  const queries = [
+    `CREATE TABLE IF NOT EXISTS tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, title text NOT NULL, category text DEFAULT 'personal', priority text DEFAULT 'medium', due_date date, done boolean DEFAULT false, created_at timestamptz DEFAULT now())`,
+    `CREATE TABLE IF NOT EXISTS habits (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, icon text DEFAULT '🎯', streak int DEFAULT 0, created_at timestamptz DEFAULT now())`,
+    `CREATE TABLE IF NOT EXISTS habit_logs (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, habit_id uuid REFERENCES habits(id) ON DELETE CASCADE, log_date date NOT NULL, done boolean DEFAULT true, UNIQUE(habit_id, log_date))`,
+    `CREATE TABLE IF NOT EXISTS projects (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, deadline date, created_at timestamptz DEFAULT now())`,
+    `CREATE TABLE IF NOT EXISTS project_tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, project_id uuid REFERENCES projects(id) ON DELETE CASCADE, title text NOT NULL, done boolean DEFAULT false)`,
+    `CREATE TABLE IF NOT EXISTS planner_slots (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, slot_date date NOT NULL, hour text NOT NULL, content text, UNIQUE(slot_date, hour))`
+  ];
+  for (const q of queries) {
+    const {error} = await supabase_client.rpc('exec_sql', {query: q}).catch(() => ({error:null}));
+  }
+  // Try a simple insert test
+  const {error} = await supabase_client.from('tasks').select('id').limit(1);
+  if (error && error.code === '42P01') {
+    throw new Error('جداول ساخته نشدند. لطفاً SQL Editor سوپابیس را ببین.');
+  }
+}
+
+function showConfigError(msg) {
+  document.getElementById('config-error').textContent = msg;
+}
+
+// ─── INIT ───────────────────────────────────────────────
+function initApp() {
+  const now = new Date();
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  const dateStr = now.toLocaleDateString('fa-IR', opts);
+  document.getElementById('dash-date').textContent = dateStr;
+  document.getElementById('today-label').textContent = now.toLocaleDateString('fa-IR', {month:'short', day:'numeric'});
+  document.getElementById('planner-date').value = plannerDate;
+
+  loadAll();
+}
+
+async function loadAll() {
+  await Promise.all([loadTasks(), loadHabits(), loadProjects(), loadPlanner()]);
+  renderDashboard();
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'tasks') renderTasks();
+  if (page === 'habits') renderHabits();
+  if (page === 'projects') renderProjects();
+  if (page === 'planner') renderPlanner();
+}
+
+// ─── TASKS ──────────────────────────────────────────────
+async function loadTasks() {
+  const {data} = await supabase_client.from('tasks').select('*').order('created_at', {ascending: false});
+  allTasks = data || [];
+}
+
+async function addTask() {
+  const title = document.getElementById('task-title').value.trim();
+  if (!title) return;
+  const task = {
+    title,
+    category: document.getElementById('task-cat').value,
+    priority: document.getElementById('task-prio').value,
+    due_date: document.getElementById('task-due').value || null,
+    done: false
+  };
+  const {data, error} = await supabase_client.from('tasks').insert(task).select().single();
+  if (!error) {
+    allTasks.unshift(data);
+    document.getElementById('task-title').value = '';
+    document.getElementById('task-due').value = '';
+    renderTasks();
+    toast('تسک اضافه شد ✅');
+  }
+}
+
+async function toggleTask(id) {
+  const task = allTasks.find(t => t.id === id);
+  if (!task) return;
+  task.done = !task.done;
+  await supabase_client.from('tasks').update({done: task.done}).eq('id', id);
+  renderTasks();
+  if (task.done) toast('تسک انجام شد 🎉');
+}
+
+async function deleteTask(id) {
+  allTasks = allTasks.filter(t => t.id !== id);
+  await supabase_client.from('tasks').delete().eq('id', id);
+  renderTasks();
+  toast('تسک حذف شد');
+}
+
+function filterTasks(f) { currentFilter = f; renderTasks(); }
+
+function renderTasks() {
+  let tasks = allTasks;
+  if (currentFilter !== 'all') tasks = tasks.filter(t => t.category === currentFilter);
+  const pending = tasks.filter(t => !t.done);
+  const done = tasks.filter(t => t.done).slice(0, 8);
+  document.getElementById('tasks-pending').innerHTML = pending.length
+    ? pending.map(taskHTML).join('')
+    : '<div class="empty-state"><div class="empty-icon">✨</div>همه تسک‌ها انجام شده!</div>';
+  document.getElementById('tasks-done').innerHTML = done.length
+    ? done.map(taskHTML).join('')
+    : '<div class="empty-state"><div class="empty-icon">📋</div>هنوز تسکی انجام نشده</div>';
+}
+
+function taskHTML(t) {
+  const due = t.due_date ? `<span class="task-meta">${new Date(t.due_date+'T12:00').toLocaleDateString('fa-IR',{month:'short',day:'numeric'})}</span>` : '';
+  const catLabel = {work:'💼',personal:'👤',project:'📁'}[t.category]||'';
+  return `<div class="task-item ${t.done?'done':''}">
+    <div class="task-check ${t.done?'checked':''}" onclick="toggleTask('${t.id}')">${t.done?'✓':''}</div>
+    <span class="task-title">${esc(t.title)}</span>
+    <span class="badge ${t.priority}">${{high:'بالا',medium:'متوسط',low:'پایین'}[t.priority]}</span>
+    <span style="font-size:13px">${catLabel}</span>
+    ${due}
+    <button class="task-del" onclick="deleteTask('${t.id}')">×</button>
+  </div>`;
+}
+
+// ─── HABITS ─────────────────────────────────────────────
+async function loadHabits() {
+  const {data: habits} = await supabase_client.from('habits').select('*').order('created_at');
+  const today = new Date();
+  const weekAgo = new Date(today); weekAgo.setDate(today.getDate()-6);
+  const {data: logs} = await supabase_client.from('habit_logs')
+    .select('*')
+    .gte('log_date', weekAgo.toISOString().split('T')[0]);
+  allHabits = habits || [];
+  allHabitLogs = logs || [];
+}
+
+async function addHabit() {
+  const name = document.getElementById('habit-name').value.trim();
+  if (!name) return;
+  const {data, error} = await supabase_client.from('habits').insert({
+    name, icon: document.getElementById('habit-icon').value
+  }).select().single();
+  if (!error) {
+    allHabits.push(data);
+    document.getElementById('habit-name').value = '';
+    renderHabits();
+    toast('عادت اضافه شد 🔥');
+  }
+}
+
+async function toggleHabitDay(habitId, dateStr) {
+  const existing = allHabitLogs.find(l => l.habit_id === habitId && l.log_date === dateStr);
+  if (existing) {
+    await supabase_client.from('habit_logs').delete().eq('id', existing.id);
+    allHabitLogs = allHabitLogs.filter(l => l.id !== existing.id);
+  } else {
+    const {data} = await supabase_client.from('habit_logs').insert({habit_id: habitId, log_date: dateStr}).select().single();
+    if (data) allHabitLogs.push(data);
+  }
+  updateStreak(habitId);
+  renderHabits();
+  renderDashboard();
+}
+
+async function updateStreak(habitId) {
+  const logs = allHabitLogs.filter(l => l.habit_id === habitId).map(l => l.log_date).sort().reverse();
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today); d.setDate(today.getDate() - i);
+    const ds = d.toISOString().split('T')[0];
+    if (logs.includes(ds)) streak++; else break;
+  }
+  allHabits = allHabits.map(h => h.id === habitId ? {...h, streak} : h);
+  await supabase_client.from('habits').update({streak}).eq('id', habitId);
+}
+
+async function deleteHabit(id) {
+  allHabits = allHabits.filter(h => h.id !== id);
+  await supabase_client.from('habits').delete().eq('id', id);
+  renderHabits();
+  toast('عادت حذف شد');
+}
+
+function renderHabits() {
+  const container = document.getElementById('habits-list');
+  if (!allHabits.length) {
+    container.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🌱</div>اولین عادتت رو اضافه کن!</div>';
+    return;
+  }
+  container.innerHTML = allHabits.map(h => habitCardHTML(h)).join('');
+}
+
+function habitCardHTML(h) {
+  const today = new Date();
+  const days = Array.from({length:7}, (_,i) => {
+    const d = new Date(today); d.setDate(today.getDate()-6+i);
+    return {date: d.toISOString().split('T')[0], label: DAYS_FA[d.getDay()], isToday: i===6};
+  });
+  const logDates = allHabitLogs.filter(l => l.habit_id === h.id).map(l => l.log_date);
+  const daysHTML = days.map(d => {
+    const done = logDates.includes(d.date);
+    return `<div class="habit-day ${done?'done':''} ${d.isToday?'today-marker':''}" onclick="toggleHabitDay('${h.id}','${d.date}')" title="${d.date}">${d.label}</div>`;
+  }).join('');
+  return `<div class="habit-card">
+    <div class="habit-header">
+      <span style="font-size:1.3rem">${h.icon}</span>
+      <span class="habit-name">${esc(h.name)}</span>
+      <span class="habit-streak">🔥 ${h.streak}</span>
+      <button onclick="deleteHabit('${h.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;margin-right:4px">×</button>
+    </div>
+    <div class="habit-week">${daysHTML}</div>
+  </div>`;
+}
+
+// ─── PROJECTS ─────────────────────────────────────────────
+async function loadProjects() {
+  const {data: projects} = await supabase_client.from('projects').select('*').order('created_at');
+  const {data: ptasks} = await supabase_client.from('project_tasks').select('*');
+  allProjects = projects || [];
+  allProjectTasks = ptasks || [];
+}
+
+async function addProject() {
+  const name = document.getElementById('proj-name').value.trim();
+  if (!name) return;
+  const {data, error} = await supabase_client.from('projects').insert({
+    name, deadline: document.getElementById('proj-deadline').value || null
+  }).select().single();
+  if (!error) {
+    allProjects.push(data);
+    document.getElementById('proj-name').value = '';
+    document.getElementById('proj-deadline').value = '';
+    renderProjects();
+    toast('پروژه اضافه شد 📁');
+  }
+}
+
+async function addProjectTask(projId) {
+  const input = document.getElementById('ptask-' + projId);
+  const title = input.value.trim();
+  if (!title) return;
+  const {data, error} = await supabase_client.from('project_tasks').insert({project_id: projId, title}).select().single();
+  if (!error) {
+    allProjectTasks.push(data);
+    input.value = '';
+    renderProjects();
+  }
+}
+
+async function toggleProjectTask(id) {
+  const pt = allProjectTasks.find(t => t.id === id);
+  if (!pt) return;
+  pt.done = !pt.done;
+  await supabase_client.from('project_tasks').update({done: pt.done}).eq('id', id);
+  renderProjects();
+}
+
+async function deleteProject(id) {
+  allProjects = allProjects.filter(p => p.id !== id);
+  allProjectTasks = allProjectTasks.filter(t => t.project_id !== id);
+  await supabase_client.from('projects').delete().eq('id', id);
+  renderProjects();
+  toast('پروژه حذف شد');
+}
+
+function renderProjects() {
+  const container = document.getElementById('projects-list');
+  if (!allProjects.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🚀</div>اولین پروژه‌ات رو شروع کن!</div>';
+    return;
+  }
+  container.innerHTML = allProjects.map(p => {
+    const ptasks = allProjectTasks.filter(t => t.project_id === p.id);
+    const done = ptasks.filter(t => t.done).length;
+    const pct = ptasks.length ? Math.round(done / ptasks.length * 100) : 0;
+    const dl = p.deadline ? new Date(p.deadline+'T12:00').toLocaleDateString('fa-IR',{month:'long',day:'numeric'}) : '';
+    return `<div class="project-card">
+      <div class="project-header">
+        <span style="font-size:1.2rem">📁</span>
+        <span class="project-name">${esc(p.name)}</span>
+        ${dl ? `<span style="font-size:11px;color:var(--text3)">${dl}</span>` : ''}
+        <button onclick="deleteProject('${p.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">×</button>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="project-stats">
+        <span>${done}/${ptasks.length} تسک</span>
+        <span>${pct}% پیشرفت</span>
+      </div>
+      <div class="task-list" style="margin-top:12px">
+        ${ptasks.map(t => `<div class="task-item ${t.done?'done':''}">
+          <div class="task-check ${t.done?'checked':''}" onclick="toggleProjectTask('${t.id}')">${t.done?'✓':''}</div>
+          <span class="task-title">${esc(t.title)}</span>
+        </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <input class="form-input" id="ptask-${p.id}" placeholder="زیرتسک جدید..." style="font-size:12px;padding:7px 10px" onkeydown="if(event.key==='Enter')addProjectTask('${p.id}')" />
+        <button class="btn-sm" onclick="addProjectTask('${p.id}')">+ افزودن</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── PLANNER ─────────────────────────────────────────────
+async function loadPlanner() {
+  const {data} = await supabase_client.from('planner_slots').select('*').eq('slot_date', plannerDate);
+  plannerSlots = {};
+  (data || []).forEach(s => { plannerSlots[s.hour] = {id: s.id, content: s.content}; });
+  renderPlanner();
+}
+
+function renderPlanner() {
+  const el = document.getElementById('planner-date-label');
+  if (el) el.textContent = new Date(plannerDate+'T12:00').toLocaleDateString('fa-IR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const container = document.getElementById('time-blocks');
+  if (!container) return;
+  container.innerHTML = HOURS.map(h => {
+    const slot = plannerSlots[h];
+    const content = slot ? esc(slot.content) : '';
+    return `<div class="time-block">
+      <div class="time-label">${h}</div>
+      <div class="time-slot ${content?'has-event':''}" contenteditable="true"
+        onblur="savePlannerSlot('${h}', this.textContent.trim())"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+      >${content}</div>
+    </div>`;
+  }).join('');
+}
+
+async function savePlannerSlot(hour, content) {
+  const existing = plannerSlots[hour];
+  if (!content && !existing) return;
+  if (existing && existing.content === content) return;
+
+  if (!content && existing) {
+    await supabase_client.from('planner_slots').delete().eq('id', existing.id);
+    delete plannerSlots[hour];
+  } else if (existing) {
+    await supabase_client.from('planner_slots').update({content}).eq('id', existing.id);
+    plannerSlots[hour].content = content;
+  } else {
+    const {data} = await supabase_client.from('planner_slots').insert({slot_date: plannerDate, hour, content}).select().single();
+    if (data) plannerSlots[hour] = {id: data.id, content};
+  }
+  renderPlanner();
+}
+
+function changeDay(delta) {
+  const d = new Date(plannerDate+'T12:00');
+  d.setDate(d.getDate() + delta);
+  plannerDate = d.toISOString().split('T')[0];
+  document.getElementById('planner-date').value = plannerDate;
+  loadPlanner();
+}
+
+function goToday() {
+  plannerDate = new Date().toISOString().split('T')[0];
+  document.getElementById('planner-date').value = plannerDate;
+  loadPlanner();
+}
+
+// ─── DASHBOARD ─────────────────────────────────────────────
+function renderDashboard() {
+  const today = new Date().toISOString().split('T')[0];
+  const todayTasks = allTasks.filter(t => !t.done && (t.due_date === today || !t.due_date)).slice(0,5);
+  const todayDone = allTasks.filter(t => t.done && t.due_date === today).length;
+  const totalPending = allTasks.filter(t => !t.done).length;
+  const todayLogs = allHabitLogs.filter(l => l.log_date === today);
+  const habitRate = allHabits.length ? Math.round(todayLogs.length / allHabits.length * 100) : 0;
+  const activeProjects = allProjects.length;
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-label">تسک‌های در انتظار</div><div class="stat-value amber">${totalPending}</div></div>
+    <div class="stat-card"><div class="stat-label">عادت‌های امروز</div><div class="stat-value green">${todayLogs.length}/${allHabits.length}</div></div>
+    <div class="stat-card"><div class="stat-label">پروژه‌های فعال</div><div class="stat-value accent">${activeProjects}</div></div>
+    <div class="stat-card"><div class="stat-label">میزان انجام عادت‌ها</div><div class="stat-value blue">${habitRate}%</div></div>
+  `;
+
+  const dashTasks = document.getElementById('dash-tasks');
+  dashTasks.innerHTML = todayTasks.length
+    ? todayTasks.map(taskHTML).join('')
+    : '<div class="empty-state"><div class="empty-icon">🎉</div>هیچ تسک فوری‌ای نداری!</div>';
+
+  const dashHabits = document.getElementById('dash-habits');
+  dashHabits.innerHTML = allHabits.length
+    ? allHabits.slice(0,4).map(h => habitCardHTML(h)).join('')
+    : '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🌱</div>هنوز عادتی ثبت نشده</div>';
+}
+
+// ─── UTILS ─────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ─── AUTO-LOGIN ─────────────────────────────────────────
+window.addEventListener('load', () => {
+  const url = localStorage.getItem('los_url');
+  const key = localStorage.getItem('los_key');
+  if (url && key) {
+    document.getElementById('sb-url').value = url;
+    document.getElementById('sb-key').value = key;
+    initSupabase();
+  }
+});
+</script>
+
+<!-- SQL HELPER SCRIPT -->
+<script>
+// Supabase RPC helper — اگر exec_sql وجود نداشت، جداول رو دستی میسازیم
+(async function patchSetup() {
+  const origSetup = window.setupTables;
+  window.setupTables = async function() {
+    if (!supabase_client) return;
+    // Check if tables exist by trying to query them
+    const tables = ['tasks', 'habits', 'habit_logs', 'projects', 'project_tasks', 'planner_slots'];
+    for (const t of tables) {
+      const {error} = await supabase_client.from(t).select('id').limit(1);
+      if (error && error.code === '42P01') {
+        document.getElementById('config-error').innerHTML =
+          `⚠️ جداول وجود ندارند. لطفاً در <strong>Supabase → SQL Editor</strong> این SQL رو اجرا کن و دوباره تلاش کن:<br><br>
+          <textarea style="width:100%;height:120px;font-size:10px;background:#111;color:#0f0;border:none;padding:8px;border-radius:6px;font-family:monospace;resize:none">
+CREATE TABLE IF NOT EXISTS tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, title text NOT NULL, category text DEFAULT 'personal', priority text DEFAULT 'medium', due_date date, done boolean DEFAULT false, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS habits (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, icon text DEFAULT '🎯', streak int DEFAULT 0, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS habit_logs (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, habit_id uuid REFERENCES habits(id) ON DELETE CASCADE, log_date date NOT NULL, done boolean DEFAULT true, UNIQUE(habit_id, log_date));
+CREATE TABLE IF NOT EXISTS projects (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, deadline date, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS project_tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, project_id uuid REFERENCES projects(id) ON DELETE CASCADE, title text NOT NULL, done boolean DEFAULT false);
+CREATE TABLE IF NOT EXISTS planner_slots (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, slot_date date NOT NULL, hour text NOT NULL, content text, UNIQUE(slot_date, hour));
+          </textarea>`;
+        throw new Error('جداول وجود ندارند');
+      }
+    }
+  };
+})();
+</script>
+</body>
+</html>
