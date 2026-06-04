@@ -4,573 +4,239 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Life OS</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' font-family='sans-serif'%3E⚡%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%232563eb'/%3E%3Ctext x='90' y='125' font-size='100' text-anchor='middle' font-family='sans-serif'%3E⚡%3C/text%3E%3C/svg%3E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Life OS">
+<meta name="theme-color" content="#2563eb">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f0f13;
-    --bg2: #16161c;
-    --bg3: #1e1e28;
-    --bg4: #26263200;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
-    --text: #e8e8f0;
-    --text2: #9090a8;
-    --text3: #5a5a72;
-    --accent: #7c6af7;
-    --accent2: #a78bfa;
-    --accent-bg: rgba(124,106,247,0.12);
-    --green: #34d399;
-    --green-bg: rgba(52,211,153,0.1);
-    --amber: #fbbf24;
-    --amber-bg: rgba(251,191,36,0.1);
-    --red: #f87171;
-    --red-bg: rgba(248,113,113,0.1);
-    --blue: #60a5fa;
-    --blue-bg: rgba(96,165,250,0.1);
-    --radius: 12px;
-    --radius-sm: 8px;
-    --shadow: 0 4px 24px rgba(0,0,0,0.4);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Vazirmatn', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 14px;
-    line-height: 1.6;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif !important; }
+:root {
+  --bg:       #f0f4ff;
+  --bg2:      #ffffff;
+  --bg3:      #e8eef8;
+  --border:   rgba(37,99,235,0.1);
+  --border2:  rgba(37,99,235,0.2);
+  --text:     #1e293b;
+  --text2:    #475569;
+  --text3:    #94a3b8;
+  --accent:   #2563eb;
+  --accent2:  #1d4ed8;
+  --accent-bg:#dbeafe;
+  --green:    #059669;
+  --green-bg: #d1fae5;
+  --amber:    #d97706;
+  --amber-bg: #fef3c7;
+  --red:      #dc2626;
+  --red-bg:   #fee2e2;
+  --blue:     #0284c7;
+  --blue-bg:  #e0f2fe;
+  --teal:     #0d9488;
+  --teal-bg:  #ccfbf1;
+  --radius:   14px;
+  --radius-sm:8px;
+  --shadow:   0 2px 16px rgba(37,99,235,0.08);
+  --shadow2:  0 4px 24px rgba(37,99,235,0.14);
+}
+body { background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.6; }
 
-  /* CONFIG SCREEN */
-  #config-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    background: radial-gradient(ellipse at 30% 40%, rgba(124,106,247,0.08) 0%, transparent 60%);
-  }
-  .config-card {
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    border-radius: 20px;
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 480px;
-    box-shadow: var(--shadow);
-  }
-  .config-logo {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--accent2);
-    margin-bottom: 0.25rem;
-    letter-spacing: -1px;
-  }
-  .config-sub {
-    color: var(--text2);
-    font-size: 13px;
-    margin-bottom: 2rem;
-  }
-  .config-label {
-    font-size: 12px;
-    color: var(--text2);
-    margin-bottom: 6px;
-    display: block;
-  }
-  .config-input {
-    width: 100%;
-    background: var(--bg3);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-family: 'Vazirmatn', sans-serif;
-    font-size: 13px;
-    padding: 10px 14px;
-    margin-bottom: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-    direction: ltr;
-  }
-  .config-input:focus { border-color: var(--accent); }
-  .config-note {
-    background: var(--accent-bg);
-    border: 1px solid rgba(124,106,247,0.2);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    font-size: 12px;
-    color: var(--text2);
-    margin-bottom: 1.5rem;
-    line-height: 1.7;
-    direction: rtl;
-    text-align: right;
-  }
-  .config-note strong { color: var(--accent2); }
-  .config-note a { color: var(--accent2); }
-  .btn-primary {
-    width: 100%;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-sm);
-    padding: 12px;
-    font-family: 'Vazirmatn', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-  }
-  .btn-primary:hover { opacity: 0.88; }
-  .btn-primary:active { transform: scale(0.99); }
-  .config-error { color: var(--red); font-size: 12px; margin-top: 8px; text-align: center; }
+/* ── CONFIG ── */
+#config-screen {
+  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem;
+  background: linear-gradient(135deg,#eff6ff 0%,#e0e7ff 100%);
+}
+.config-card { background:var(--bg2); border:1px solid var(--border2); border-radius:20px; padding:2.5rem; width:100%; max-width:480px; box-shadow:var(--shadow2); }
+.config-logo { font-size:2rem; font-weight:700; color:var(--accent); margin-bottom:.25rem; }
+.config-sub  { color:var(--text2); font-size:13px; margin-bottom:2rem; }
+.config-label{ font-size:12px; color:var(--text2); margin-bottom:6px; display:block; }
+.config-input{ width:100%; background:var(--bg3); border:1px solid var(--border2); border-radius:var(--radius-sm); color:var(--text); font-size:13px; padding:10px 14px; margin-bottom:1rem; outline:none; transition:border-color .2s; direction:ltr; }
+.config-input:focus { border-color:var(--accent); }
+.config-note { background:var(--accent-bg); border:1px solid rgba(37,99,235,.2); border-radius:var(--radius-sm); padding:12px 14px; font-size:12px; color:var(--text2); margin-bottom:1.5rem; line-height:1.8; }
+.config-note strong { color:var(--accent); }
+.config-note a { color:var(--accent); }
+.btn-primary { width:100%; background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm); padding:12px; font-size:14px; font-weight:600; cursor:pointer; transition:opacity .2s,transform .1s; }
+.btn-primary:hover { opacity:.88; }
+.config-error { color:var(--red); font-size:12px; margin-top:8px; text-align:center; }
 
-  /* MAIN APP */
-  #app { display: none; min-height: 100vh; }
+/* ── APP SHELL ── */
+#app { display:none; min-height:100vh; }
+.sidebar {
+  position:fixed; right:0; top:0; bottom:0; width:224px;
+  background:var(--bg2); border-left:1px solid var(--border);
+  display:flex; flex-direction:column; padding:1.5rem 0; z-index:100;
+  box-shadow:var(--shadow);
+}
+.sidebar-logo { padding:0 1.25rem 1.25rem; font-size:1.1rem; font-weight:700; color:var(--accent); border-bottom:1px solid var(--border); margin-bottom:1rem; display:flex; align-items:center; gap:8px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 1.25rem; cursor:pointer; color:var(--text2); font-size:13px; transition:all .15s; margin:2px 8px; border-radius:var(--radius-sm); }
+.nav-item:hover { background:var(--bg3); color:var(--text); }
+.nav-item.active { background:var(--accent-bg); color:var(--accent); font-weight:600; }
+.nav-icon { font-size:16px; width:20px; text-align:center; }
+.sidebar-bottom { margin-top:auto; padding:1rem 1.25rem 0; border-top:1px solid var(--border); }
+.today-date { font-size:11px; color:var(--text3); text-align:center; padding-top:.75rem; }
+.main { margin-right:224px; padding:2rem 2.5rem; max-width:980px; }
+.page { display:none; }
+.page.active { display:block; }
+.page-title { font-size:1.35rem; font-weight:700; color:var(--text); margin-bottom:.25rem; }
+.page-sub { font-size:13px; color:var(--text2); margin-bottom:2rem; }
 
-  /* SIDEBAR */
-  .sidebar {
-    position: fixed;
-    right: 0; top: 0; bottom: 0;
-    width: 220px;
-    background: var(--bg2);
-    border-left: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 1.5rem 0;
-    z-index: 100;
-  }
-  .sidebar-logo {
-    padding: 0 1.25rem 1.5rem;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--accent2);
-    letter-spacing: -0.5px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 1rem;
-  }
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 1.25rem;
-    cursor: pointer;
-    color: var(--text2);
-    font-size: 13px;
-    transition: all 0.15s;
-    border-radius: 0;
-    margin: 0 8px;
-    border-radius: var(--radius-sm);
-  }
-  .nav-item:hover { background: var(--bg3); color: var(--text); }
-  .nav-item.active { background: var(--accent-bg); color: var(--accent2); }
-  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
-  .sidebar-bottom {
-    margin-top: auto;
-    padding: 1rem 1.25rem 0;
-    border-top: 1px solid var(--border);
-  }
-  .today-date {
-    font-size: 11px;
-    color: var(--text3);
-    text-align: center;
-    padding-top: 0.75rem;
-  }
+/* ── STAT CARDS ── */
+.cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin-bottom:2rem; }
+.stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow); }
+.stat-label { font-size:11px; color:var(--text3); letter-spacing:.3px; margin-bottom:6px; }
+.stat-value { font-size:1.9rem; font-weight:700; line-height:1; }
+.stat-value.green  { color:var(--green); }
+.stat-value.amber  { color:var(--amber); }
+.stat-value.accent { color:var(--accent); }
+.stat-value.blue   { color:var(--blue); }
+.stat-value.teal   { color:var(--teal); }
 
-  /* MAIN CONTENT */
-  .main {
-    margin-right: 220px;
-    padding: 2rem 2.5rem;
-    max-width: 960px;
-  }
-  .page { display: none; }
-  .page.active { display: block; }
-  .page-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.25rem;
-  }
-  .page-sub { font-size: 13px; color: var(--text2); margin-bottom: 2rem; }
+/* ── SECTION ── */
+.section { margin-bottom:2rem; }
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+.section-title { font-size:14px; font-weight:600; color:var(--text); }
 
-  /* CARDS GRID */
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-  .stat-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-  }
-  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .stat-value { font-size: 1.8rem; font-weight: 700; line-height: 1; }
-  .stat-value.green { color: var(--green); }
-  .stat-value.amber { color: var(--amber); }
-  .stat-value.accent { color: var(--accent2); }
-  .stat-value.blue { color: var(--blue); }
+/* ── TASK ITEMS ── */
+.task-list { display:flex; flex-direction:column; gap:6px; }
+.task-item { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:11px 14px; display:flex; align-items:center; gap:10px; transition:border-color .2s; box-shadow:var(--shadow); }
+.task-item:hover { border-color:var(--border2); }
+.task-item.done { opacity:.45; }
+.task-item.done .task-title { text-decoration:line-through; }
+.task-check { width:18px; height:18px; border:1.5px solid var(--border2); border-radius:50%; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all .2s; font-size:10px; }
+.task-check.checked { background:var(--green); border-color:var(--green); color:#fff; }
+.task-title { flex:1; font-size:13px; color:var(--text); }
+.task-meta { font-size:11px; color:var(--text3); white-space:nowrap; }
+.task-del { background:none; border:none; color:var(--text3); cursor:pointer; font-size:16px; padding:2px 4px; border-radius:4px; opacity:0; transition:color .15s; }
+.task-item:hover .task-del { opacity:1; }
+.task-del:hover { color:var(--red); }
 
-  /* SECTION */
-  .section { margin-bottom: 2rem; }
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-  }
-  .section-title { font-size: 14px; font-weight: 600; color: var(--text); }
+/* ── BADGES ── */
+.badge { font-size:10px; padding:2px 7px; border-radius:20px; font-weight:600; flex-shrink:0; }
+.badge.high     { background:var(--red-bg);   color:var(--red); }
+.badge.medium   { background:var(--amber-bg); color:var(--amber); }
+.badge.low      { background:var(--green-bg); color:var(--green); }
+.badge.work     { background:var(--blue-bg);  color:var(--blue); }
+.badge.personal { background:var(--accent-bg);color:var(--accent); }
+.badge.project  { background:var(--teal-bg);  color:var(--teal); }
 
-  /* TASK ITEM */
-  .task-list { display: flex; flex-direction: column; gap: 6px; }
-  .task-item {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: border-color 0.2s;
-  }
-  .task-item:hover { border-color: var(--border2); }
-  .task-item.done { opacity: 0.45; }
-  .task-item.done .task-title { text-decoration: line-through; }
-  .task-check {
-    width: 18px; height: 18px;
-    border: 1.5px solid var(--border2);
-    border-radius: 50%;
-    cursor: pointer;
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-    font-size: 10px;
-  }
-  .task-check.checked { background: var(--green); border-color: var(--green); color: var(--bg); }
-  .task-title { flex: 1; font-size: 13px; color: var(--text); }
-  .task-meta { font-size: 11px; color: var(--text3); white-space: nowrap; }
-  .task-del {
-    background: none; border: none; color: var(--text3);
-    cursor: pointer; font-size: 16px; padding: 2px 4px;
-    border-radius: 4px; transition: color 0.15s;
-    opacity: 0;
-  }
-  .task-item:hover .task-del { opacity: 1; }
-  .task-del:hover { color: var(--red); }
+/* ── FORMS ── */
+.add-form { background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius); padding:1.25rem; margin-bottom:1.5rem; box-shadow:var(--shadow); }
+.form-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+.form-row:last-child { margin-bottom:0; }
+.form-input  { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-size:13px; padding:8px 12px; outline:none; transition:border-color .2s; flex:1; min-width:100px; }
+.form-input:focus { border-color:var(--accent); }
+.form-select { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-size:13px; padding:8px 12px; outline:none; cursor:pointer; }
+.btn-add { background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm); padding:8px 16px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; transition:opacity .2s; }
+.btn-add:hover { opacity:.85; }
+.btn-sm { background:var(--bg3); color:var(--text2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:6px 12px; font-size:12px; cursor:pointer; transition:all .15s; }
+.btn-sm:hover { border-color:var(--accent); color:var(--accent); }
 
-  /* PRIORITY BADGE */
-  .badge {
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 20px;
-    font-weight: 600;
-    flex-shrink: 0;
-  }
-  .badge.high { background: var(--red-bg); color: var(--red); }
-  .badge.medium { background: var(--amber-bg); color: var(--amber); }
-  .badge.low { background: var(--green-bg); color: var(--green); }
-  .badge.work { background: var(--blue-bg); color: var(--blue); }
-  .badge.personal { background: var(--accent-bg); color: var(--accent2); }
+/* ── HABITS ── */
+.habit-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+.habit-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow); }
+.habit-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.habit-name { font-size:14px; font-weight:600; flex:1; margin:0 8px; }
+.habit-streak { font-size:11px; color:var(--amber); background:var(--amber-bg); padding:3px 8px; border-radius:20px; font-weight:600; }
+.habit-week { display:flex; gap:5px; margin-top:8px; }
+.habit-day { flex:1; height:30px; border-radius:6px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--text3); cursor:pointer; transition:all .15s; font-weight:500; }
+.habit-day:hover { border-color:var(--accent); color:var(--accent); }
+.habit-day.done { background:var(--green); border-color:var(--green); color:#fff; }
+.habit-day.today-marker { border-color:var(--accent); color:var(--accent); font-weight:700; }
+.habit-day.done.today-marker { background:var(--accent); border-color:var(--accent); }
 
-  /* ADD FORM */
-  .add-form {
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    margin-bottom: 1.5rem;
-  }
-  .form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-  .form-row:last-child { margin-bottom: 0; }
-  .form-input {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-family: 'Vazirmatn', sans-serif;
-    font-size: 13px;
-    padding: 8px 12px;
-    outline: none;
-    transition: border-color 0.2s;
-    flex: 1;
-    min-width: 120px;
-  }
-  .form-input:focus { border-color: var(--accent); }
-  .form-select {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-family: 'Vazirmatn', sans-serif;
-    font-size: 13px;
-    padding: 8px 12px;
-    outline: none;
-    cursor: pointer;
-  }
-  .btn-add {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-sm);
-    padding: 8px 16px;
-    font-family: 'Vazirmatn', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: opacity 0.2s;
-  }
-  .btn-add:hover { opacity: 0.85; }
-  .btn-sm {
-    background: var(--bg3);
-    color: var(--text2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 6px 12px;
-    font-family: 'Vazirmatn', sans-serif;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .btn-sm:hover { border-color: var(--accent); color: var(--accent2); }
+/* ── PROJECTS ── */
+.project-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem; box-shadow:var(--shadow); }
+.project-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.project-name { font-size:15px; font-weight:600; flex:1; }
+.progress-bar { height:5px; background:var(--bg3); border-radius:3px; overflow:hidden; margin-bottom:10px; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--teal)); border-radius:3px; transition:width .5s ease; }
+.project-stats { display:flex; gap:1rem; font-size:12px; color:var(--text3); margin-bottom:12px; }
 
-  /* HABITS */
-  .habit-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-  }
-  .habit-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-  }
-  .habit-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .habit-name { font-size: 14px; font-weight: 600; }
-  .habit-streak { font-size: 11px; color: var(--amber); background: var(--amber-bg); padding: 3px 8px; border-radius: 20px; }
-  .habit-week {
-    display: flex;
-    gap: 5px;
-    margin-top: 8px;
-  }
-  .habit-day {
-    flex: 1;
-    height: 28px;
-    border-radius: 5px;
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    color: var(--text3);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .habit-day.done { background: var(--green); border-color: var(--green); color: var(--bg); }
-  .habit-day.today-marker { border-color: var(--accent); color: var(--accent2); }
+/* ── PLANNER ── */
+.time-blocks { display:flex; flex-direction:column; gap:6px; }
+.time-block { display:flex; gap:12px; align-items:stretch; }
+.time-label { width:52px; font-size:11px; color:var(--text3); text-align:left; flex-shrink:0; padding-top:10px; direction:ltr; }
+.time-slot { flex:1; min-height:44px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px 12px; cursor:pointer; transition:all .15s; font-size:13px; display:flex; align-items:center; }
+.time-slot:hover { border-color:var(--accent); }
+.time-slot.has-event { background:var(--accent-bg); border-color:rgba(37,99,235,.25); color:var(--accent2); }
+.time-slot:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(37,99,235,.1); }
 
-  /* PROJECTS */
-  .project-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    margin-bottom: 1rem;
-  }
-  .project-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-  .project-name { font-size: 15px; font-weight: 600; flex: 1; }
-  .progress-bar {
-    height: 4px;
-    background: var(--bg3);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-bottom: 12px;
-  }
-  .progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    transition: width 0.4s ease;
-  }
-  .project-stats { display: flex; gap: 1rem; font-size: 12px; color: var(--text3); }
+/* ── CHART CONTAINERS ── */
+.chart-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow); margin-bottom:1rem; }
+.chart-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:1rem; }
+.chart-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1rem; margin-bottom:1.5rem; }
 
-  /* PLANNER */
-  .time-blocks {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .time-block {
-    display: flex;
-    gap: 12px;
-    align-items: stretch;
-  }
-  .time-label {
-    width: 50px;
-    font-size: 11px;
-    color: var(--text3);
-    text-align: left;
-    flex-shrink: 0;
-    padding-top: 10px;
-    direction: ltr;
-  }
-  .time-slot {
-    flex: 1;
-    min-height: 44px;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-  }
-  .time-slot:hover { border-color: var(--accent); }
-  .time-slot.has-event {
-    background: var(--accent-bg);
-    border-color: rgba(124,106,247,0.3);
-    color: var(--accent2);
-  }
-  .time-slot.editing {
-    outline: none;
-    border-color: var(--accent);
-  }
+/* ── HABIT TRACKER CALENDAR ── */
+.habit-tracker { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow); margin-bottom:1rem; }
+.tracker-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+.tracker-name { font-size:14px; font-weight:600; }
+.tracker-grid { display:flex; flex-wrap:wrap; gap:4px; }
+.tracker-cell { width:14px; height:14px; border-radius:3px; background:var(--bg3); transition:background .2s; cursor:default; }
+.tracker-cell.done { background:var(--green); }
+.tracker-cell.done.level2 { background:#10b981; }
+.tracker-cell.done.level3 { background:#059669; }
+.tracker-month-labels { display:flex; gap:4px; margin-bottom:4px; font-size:10px; color:var(--text3); overflow:hidden; }
 
-  /* EMPTY STATE */
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: var(--text3);
-    font-size: 13px;
-  }
-  .empty-icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.4; }
+/* ── MISC ── */
+.empty-state { text-align:center; padding:3rem 1rem; color:var(--text3); font-size:13px; }
+.empty-icon { font-size:2rem; margin-bottom:.5rem; opacity:.4; }
+.loading { text-align:center; padding:2rem; color:var(--text2); font-size:13px; }
+#toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(10px); background:var(--text); color:var(--bg2); padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; transition:all .3s; z-index:999; pointer-events:none; }
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-  /* LOADING */
-  .loading { text-align: center; padding: 2rem; color: var(--text2); font-size: 13px; }
-
-  /* TOAST */
-  #toast {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    color: var(--text);
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 13px;
-    opacity: 0;
-    transition: all 0.3s;
-    z-index: 999;
-    pointer-events: none;
-    box-shadow: var(--shadow);
-  }
-  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* MODAL */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 200;
-    backdrop-filter: blur(4px);
-  }
-  .modal-card {
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    border-radius: 16px;
-    padding: 2rem;
-    width: 90%;
-    max-width: 440px;
-    box-shadow: var(--shadow);
-  }
-  .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 1.25rem; }
-  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
-  .btn-cancel {
-    background: none;
-    border: 1px solid var(--border2);
-    color: var(--text2);
-    border-radius: var(--radius-sm);
-    padding: 8px 16px;
-    font-family: 'Vazirmatn', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-  }
-
-  /* RESPONSIVE */
-  @media (max-width: 700px) {
-    .sidebar { width: 60px; }
-    .sidebar-logo, .nav-label, .sidebar-bottom, .today-date { display: none; }
-    .nav-item { justify-content: center; padding: 12px; }
-    .nav-icon { width: auto; }
-    .main { margin-right: 60px; padding: 1.25rem; }
-  }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--border2); }
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .sidebar { width:58px; }
+  .sidebar-logo .logo-text, .nav-label, .sidebar-bottom { display:none; }
+  .nav-item { justify-content:center; padding:12px 0; }
+  .main { margin-right:58px; padding:1rem; }
+  .chart-grid { grid-template-columns:1fr; }
+}
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
 </style>
 </head>
 <body>
 
-<!-- CONFIG SCREEN -->
+<!-- CONFIG -->
 <div id="config-screen">
   <div class="config-card">
     <div class="config-logo">⚡ Life OS</div>
     <div class="config-sub">سیستم مدیریت زندگی شخصی</div>
-
     <div class="config-note">
-      <strong>راه‌اندازی Supabase (رایگان):</strong><br>
+      <strong>راه‌اندازی Supabase:</strong><br>
       ۱. به <a href="https://supabase.com" target="_blank">supabase.com</a> برو و اکانت بساز<br>
       ۲. یک Project جدید بساز<br>
-      ۳. از منوی <strong>Settings → API</strong>، مقادیر زیر رو کپی کن<br>
-      ۴. بعد از وارد کردن، دکمه راه‌اندازی رو بزن — جداول خودکار ساخته می‌شن
+      ۳. از <strong>Settings → API</strong> مقادیر زیر را کپی کن
     </div>
-
     <label class="config-label">Supabase URL</label>
     <input class="config-input" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" />
-
     <label class="config-label">Supabase Anon Key</label>
     <input class="config-input" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." />
-
     <button class="btn-primary" onclick="initSupabase()">🚀 راه‌اندازی Life OS</button>
     <div id="config-error" class="config-error"></div>
   </div>
 </div>
 
-<!-- MAIN APP -->
+<!-- APP -->
 <div id="app">
-  <!-- SIDEBAR -->
   <nav class="sidebar">
-    <div class="sidebar-logo">⚡ Life OS</div>
-    <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
-      <span class="nav-icon">🏠</span><span class="nav-label">داشبورد</span>
+    <div class="sidebar-logo">
+      <span>⚡</span><span class="logo-text">Life OS</span>
     </div>
-    <div class="nav-item" onclick="showPage('tasks')" id="nav-tasks">
-      <span class="nav-icon">✅</span><span class="nav-label">تسک‌ها</span>
-    </div>
-    <div class="nav-item" onclick="showPage('habits')" id="nav-habits">
-      <span class="nav-icon">🔥</span><span class="nav-label">عادت‌ها</span>
-    </div>
-    <div class="nav-item" onclick="showPage('projects')" id="nav-projects">
-      <span class="nav-icon">📁</span><span class="nav-label">پروژه‌ها</span>
-    </div>
-    <div class="nav-item" onclick="showPage('planner')" id="nav-planner">
-      <span class="nav-icon">📅</span><span class="nav-label">برنامه‌ریز</span>
-    </div>
+    <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard"><span class="nav-icon">🏠</span><span class="nav-label">داشبورد</span></div>
+    <div class="nav-item" onclick="showPage('tasks')" id="nav-tasks"><span class="nav-icon">✅</span><span class="nav-label">تسک‌ها</span></div>
+    <div class="nav-item" onclick="showPage('habits')" id="nav-habits"><span class="nav-icon">🔥</span><span class="nav-label">عادت‌ها</span></div>
+    <div class="nav-item" onclick="showPage('projects')" id="nav-projects"><span class="nav-icon">📁</span><span class="nav-label">پروژه‌ها</span></div>
+    <div class="nav-item" onclick="showPage('planner')" id="nav-planner"><span class="nav-icon">📅</span><span class="nav-label">برنامه‌ریز</span></div>
     <div class="sidebar-bottom">
       <div class="today-date" id="today-label"></div>
     </div>
   </nav>
 
-  <!-- MAIN CONTENT -->
   <main class="main">
 
     <!-- DASHBOARD -->
@@ -578,47 +244,40 @@
       <div class="page-title">سلام 👋</div>
       <div class="page-sub" id="dash-date"></div>
       <div class="cards-grid" id="dash-stats"></div>
-      <div class="section">
-        <div class="section-header">
-          <span class="section-title">تسک‌های امروز</span>
-          <button class="btn-sm" onclick="showPage('tasks')">همه تسک‌ها</button>
-        </div>
-        <div id="dash-tasks" class="task-list"></div>
+      <div class="chart-grid">
+        <div class="chart-wrap"><div class="chart-title">تسک‌های ۷ روز اخیر</div><canvas id="chart-tasks-week" height="160"></canvas></div>
+        <div class="chart-wrap"><div class="chart-title">عادت‌های این هفته</div><canvas id="chart-habits-week" height="160"></canvas></div>
       </div>
       <div class="section">
-        <div class="section-header">
-          <span class="section-title">عادت‌های امروز</span>
-          <button class="btn-sm" onclick="showPage('habits')">مشاهده همه</button>
-        </div>
-        <div id="dash-habits" class="habit-grid"></div>
+        <div class="section-header"><span class="section-title">تسک‌های امروز</span><button class="btn-sm" onclick="showPage('tasks')">همه →</button></div>
+        <div id="dash-tasks" class="task-list"></div>
       </div>
     </div>
 
-    <!-- TASKS PAGE -->
+    <!-- TASKS -->
     <div class="page" id="page-tasks">
       <div class="page-title">تسک‌ها</div>
       <div class="page-sub">مدیریت وظایف کاری، شخصی و پروژه‌ای</div>
-
       <div class="add-form">
         <div class="form-row">
-          <input class="form-input" id="task-title" placeholder="عنوان تسک جدید..." style="flex:2" />
+          <input class="form-input" id="task-title" placeholder="عنوان تسک جدید..." style="flex:2" onkeydown="if(event.key==='Enter')addTask()" />
         </div>
         <div class="form-row">
-          <select class="form-select" id="task-cat">
+          <select class="form-select" id="task-cat" onchange="onTaskCatChange()">
             <option value="work">💼 کاری</option>
             <option value="personal">👤 شخصی</option>
-            <option value="project">📁 پروژه</option>
+            <option value="project">📁 پروژه‌ای</option>
           </select>
+          <select class="form-select" id="task-project" style="display:none"></select>
           <select class="form-select" id="task-prio">
             <option value="high">🔴 بالا</option>
             <option value="medium" selected>🟡 متوسط</option>
             <option value="low">🟢 پایین</option>
           </select>
-          <input class="form-input" id="task-due" type="date" style="flex:0.7" />
+          <input class="form-input" id="task-due" type="date" style="flex:0.7;direction:ltr" />
           <button class="btn-add" onclick="addTask()">+ افزودن</button>
         </div>
       </div>
-
       <div class="section">
         <div class="section-header">
           <span class="section-title">در انتظار انجام</span>
@@ -626,6 +285,7 @@
             <button class="btn-sm" onclick="filterTasks('all')">همه</button>
             <button class="btn-sm" onclick="filterTasks('work')">کاری</button>
             <button class="btn-sm" onclick="filterTasks('personal')">شخصی</button>
+            <button class="btn-sm" onclick="filterTasks('project')">پروژه‌ای</button>
           </div>
         </div>
         <div id="tasks-pending" class="task-list"></div>
@@ -636,14 +296,13 @@
       </div>
     </div>
 
-    <!-- HABITS PAGE -->
+    <!-- HABITS -->
     <div class="page" id="page-habits">
       <div class="page-title">عادت‌ها</div>
-      <div class="page-sub">ردیابی روزانه عادت‌های مثبت</div>
-
+      <div class="page-sub">ردیابی و تحلیل عادت‌های روزانه</div>
       <div class="add-form">
         <div class="form-row">
-          <input class="form-input" id="habit-name" placeholder="نام عادت (مثلاً: مطالعه ۳۰ دقیقه)" />
+          <input class="form-input" id="habit-name" placeholder="نام عادت (مثلاً: مطالعه ۳۰ دقیقه)" onkeydown="if(event.key==='Enter')addHabit()" />
           <select class="form-select" id="habit-icon">
             <option value="📚">📚 مطالعه</option>
             <option value="🏃">🏃 ورزش</option>
@@ -652,38 +311,54 @@
             <option value="✍️">✍️ نوشتن</option>
             <option value="🎯">🎯 هدف</option>
             <option value="🌙">🌙 خواب</option>
+            <option value="🥗">🥗 تغذیه</option>
           </select>
           <button class="btn-add" onclick="addHabit()">+ افزودن</button>
         </div>
       </div>
 
-      <div class="habit-grid" id="habits-list"></div>
+      <!-- HABIT CHARTS -->
+      <div class="chart-grid" id="habit-charts-grid"></div>
+
+      <!-- HABIT TRACKERS (GitHub-style) -->
+      <div class="section">
+        <div class="section-header"><span class="section-title">ردیاب سالانه</span></div>
+        <div id="habit-trackers"></div>
+      </div>
+
+      <!-- HABIT WEEKLY CARDS -->
+      <div class="section">
+        <div class="section-header"><span class="section-title">ثبت امروز</span></div>
+        <div class="habit-grid" id="habits-list"></div>
+      </div>
     </div>
 
-    <!-- PROJECTS PAGE -->
+    <!-- PROJECTS -->
     <div class="page" id="page-projects">
       <div class="page-title">پروژه‌ها</div>
       <div class="page-sub">پیگیری پروژه‌های بلندمدت</div>
-
       <div class="add-form">
         <div class="form-row">
-          <input class="form-input" id="proj-name" placeholder="نام پروژه..." />
-          <input class="form-input" id="proj-deadline" type="date" style="flex:0.6" />
+          <input class="form-input" id="proj-name" placeholder="نام پروژه..." onkeydown="if(event.key==='Enter')addProject()" />
+          <input class="form-input" id="proj-deadline" type="date" style="flex:0.6;direction:ltr" />
           <button class="btn-add" onclick="addProject()">+ پروژه جدید</button>
         </div>
       </div>
-
+      <div class="chart-wrap" style="margin-bottom:1.5rem" id="projects-chart-wrap">
+        <div class="chart-title">پیشرفت پروژه‌ها</div>
+        <canvas id="chart-projects" height="120"></canvas>
+      </div>
       <div id="projects-list"></div>
     </div>
 
-    <!-- PLANNER PAGE -->
+    <!-- PLANNER -->
     <div class="page" id="page-planner">
       <div class="page-title">برنامه‌ریز روزانه</div>
       <div class="page-sub" id="planner-date-label"></div>
-      <div style="display:flex;gap:8px;margin-bottom:1.5rem;align-items:center">
-        <button class="btn-sm" onclick="changeDay(-1)">← روز قبل</button>
-        <input type="date" class="form-input" id="planner-date" style="flex:0;width:160px" onchange="loadPlanner()" />
-        <button class="btn-sm" onclick="changeDay(1)">روز بعد →</button>
+      <div style="display:flex;gap:8px;margin-bottom:1.5rem;align-items:center;flex-wrap:wrap">
+        <button class="btn-sm" onclick="changeDay(-1)">← قبلی</button>
+        <input type="date" class="form-input" id="planner-date" style="flex:0;width:160px;direction:ltr" onchange="loadPlanner()" />
+        <button class="btn-sm" onclick="changeDay(1)">بعدی →</button>
         <button class="btn-sm" onclick="goToday()">امروز</button>
       </div>
       <div class="time-blocks" id="time-blocks"></div>
@@ -691,74 +366,105 @@
 
   </main>
 </div>
-
-<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
-let supabase_client = null;
-let allTasks = [];
-let allHabits = [];
-let allHabitLogs = [];
-let allProjects = [];
-let allProjectTasks = [];
-let plannerDate = new Date().toISOString().split('T')[0];
-let plannerSlots = {};
-let currentFilter = 'all';
+// ══════════════════════════════════════════════
+// PERSIAN DATE UTILS
+// ══════════════════════════════════════════════
+function toJalali(gy, gm, gd) {
+  var g_d_no, j_d_no, j_np, i, j_y, j_m, j_d, jy, jm, jd;
+  var g_days_in_month = [31,28,31,30,31,30,31,31,30,31,30,31];
+  var j_days_in_month = [31,31,31,31,31,31,30,30,30,30,30,29];
+  gy -= 1600; gm -= 1; gd -= 1;
+  g_d_no = 365*gy + Math.floor((gy+3)/4) - Math.floor((gy+99)/100) + Math.floor((gy+399)/400);
+  for(i=0;i<gm;i++) g_d_no += g_days_in_month[i];
+  if(gm>1 && ((gy%4==0 && gy%100!=0) || (gy%400==0))) g_d_no++;
+  g_d_no += gd;
+  j_d_no = g_d_no - 79;
+  j_np = Math.floor(j_d_no/12053); j_d_no %= 12053;
+  jy = 979 + 33*j_np + 4*Math.floor(j_d_no/1461);
+  j_d_no %= 1461;
+  if(j_d_no >= 366){ jy += Math.floor((j_d_no-1)/365); j_d_no = (j_d_no-1)%365; }
+  for(i=0;i<11&&j_d_no>=j_days_in_month[i];i++) j_d_no -= j_days_in_month[i];
+  jm = i+1; jd = j_d_no+1;
+  return [jy, jm, jd];
+}
 
-const DAYS_FA = ['ی','د','س','چ','پ','ج','ش'];
+const J_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+const J_DAYS   = ['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنج‌شنبه','جمعه'];
+const J_DAYS_SHORT = ['ش','ی','د','س','چ','پ','ج'];
+
+function jalaliStr(dateStr, opts) {
+  // dateStr = 'YYYY-MM-DD'
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T12:00');
+  const [jy, jm, jd] = toJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
+  if (opts === 'short') return `${jd} ${J_MONTHS[jm-1]}`;
+  if (opts === 'full') {
+    const dow = J_DAYS[d.getDay() === 0 ? 6 : d.getDay()-1]; // js: 0=sun
+    return `${dow} ${jd} ${J_MONTHS[jm-1]} ${jy}`;
+  }
+  return `${jy}/${String(jm).padStart(2,'0')}/${String(jd).padStart(2,'0')}`;
+}
+
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+function jalaliToday(full) {
+  const t = todayStr();
+  return full ? jalaliStr(t, 'full') : jalaliStr(t);
+}
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let sb = null;
+let allTasks = [], allHabits = [], allHabitLogs = [], allProjects = [], allProjectTasks = [];
+let plannerDate = todayStr(), plannerSlots = {}, currentFilter = 'all';
+let chartInstances = {};
+
 const HOURS = ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'];
 
-// ─── CONFIG ───────────────────────────────────────────────
+// ══════════════════════════════════════════════
+// INIT / CONFIG
+// ══════════════════════════════════════════════
 async function initSupabase() {
   const url = document.getElementById('sb-url').value.trim();
   const key = document.getElementById('sb-key').value.trim();
-  if (!url || !key) { showConfigError('لطفاً هر دو فیلد را پر کن'); return; }
+  if (!url || !key) { showCfgErr('لطفاً هر دو فیلد را پر کن'); return; }
   try {
-    supabase_client = window.supabase.createClient(url, key);
-    await setupTables();
+    sb = window.supabase.createClient(url, key);
+    const {error} = await sb.from('tasks').select('id').limit(1);
+    if (error && error.code === '42P01') { showSQLGuide(); return; }
+    if (error) throw error;
     localStorage.setItem('los_url', url);
     localStorage.setItem('los_key', key);
     document.getElementById('config-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     initApp();
-  } catch(e) {
-    showConfigError('خطا در اتصال: ' + e.message);
-  }
+  } catch(e) { showCfgErr('خطا: ' + e.message); }
 }
 
-async function setupTables() {
-  const queries = [
-    `CREATE TABLE IF NOT EXISTS tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, title text NOT NULL, category text DEFAULT 'personal', priority text DEFAULT 'medium', due_date date, done boolean DEFAULT false, created_at timestamptz DEFAULT now())`,
-    `CREATE TABLE IF NOT EXISTS habits (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, icon text DEFAULT '🎯', streak int DEFAULT 0, created_at timestamptz DEFAULT now())`,
-    `CREATE TABLE IF NOT EXISTS habit_logs (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, habit_id uuid REFERENCES habits(id) ON DELETE CASCADE, log_date date NOT NULL, done boolean DEFAULT true, UNIQUE(habit_id, log_date))`,
-    `CREATE TABLE IF NOT EXISTS projects (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, deadline date, created_at timestamptz DEFAULT now())`,
-    `CREATE TABLE IF NOT EXISTS project_tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, project_id uuid REFERENCES projects(id) ON DELETE CASCADE, title text NOT NULL, done boolean DEFAULT false)`,
-    `CREATE TABLE IF NOT EXISTS planner_slots (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, slot_date date NOT NULL, hour text NOT NULL, content text, UNIQUE(slot_date, hour))`
-  ];
-  for (const q of queries) {
-    const {error} = await supabase_client.rpc('exec_sql', {query: q}).catch(() => ({error:null}));
-  }
-  // Try a simple insert test
-  const {error} = await supabase_client.from('tasks').select('id').limit(1);
-  if (error && error.code === '42P01') {
-    throw new Error('جداول ساخته نشدند. لطفاً SQL Editor سوپابیس را ببین.');
-  }
+function showCfgErr(m) { document.getElementById('config-error').textContent = m; }
+
+function showSQLGuide() {
+  document.getElementById('config-error').innerHTML =
+    `⚠️ جداول وجود ندارند. در <strong>Supabase → SQL Editor</strong> این SQL را اجرا کن:<br><br>
+    <textarea style="width:100%;height:130px;font-size:10px;background:#1e293b;color:#7dd3fc;border:none;padding:8px;border-radius:6px;font-family:monospace;resize:none;direction:ltr">
+CREATE TABLE IF NOT EXISTS tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, title text NOT NULL, category text DEFAULT 'personal', priority text DEFAULT 'medium', due_date date, done boolean DEFAULT false, project_id uuid, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS habits (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, icon text DEFAULT '🎯', streak int DEFAULT 0, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS habit_logs (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, habit_id uuid REFERENCES habits(id) ON DELETE CASCADE, log_date date NOT NULL, done boolean DEFAULT true, UNIQUE(habit_id, log_date));
+CREATE TABLE IF NOT EXISTS projects (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, deadline date, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS project_tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, project_id uuid REFERENCES projects(id) ON DELETE CASCADE, title text NOT NULL, done boolean DEFAULT false, due_date date, priority text DEFAULT 'medium', created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS planner_slots (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, slot_date date NOT NULL, hour text NOT NULL, content text, UNIQUE(slot_date, hour));
+    </textarea>`;
 }
 
-function showConfigError(msg) {
-  document.getElementById('config-error').textContent = msg;
-}
-
-// ─── INIT ───────────────────────────────────────────────
 function initApp() {
-  const now = new Date();
-  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-  const dateStr = now.toLocaleDateString('fa-IR', opts);
-  document.getElementById('dash-date').textContent = dateStr;
-  document.getElementById('today-label').textContent = now.toLocaleDateString('fa-IR', {month:'short', day:'numeric'});
+  const t = todayStr();
+  document.getElementById('dash-date').textContent = jalaliStr(t, 'full');
+  document.getElementById('today-label').textContent = jalaliStr(t, 'short');
   document.getElementById('planner-date').value = plannerDate;
-
   loadAll();
 }
 
@@ -767,37 +473,48 @@ async function loadAll() {
   renderDashboard();
 }
 
-// ─── NAVIGATION ─────────────────────────────────────────
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
 function showPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   document.getElementById('nav-' + page).classList.add('active');
-
-  if (page === 'dashboard') renderDashboard();
-  if (page === 'tasks') renderTasks();
-  if (page === 'habits') renderHabits();
-  if (page === 'projects') renderProjects();
-  if (page === 'planner') renderPlanner();
+  if (page==='dashboard') renderDashboard();
+  if (page==='tasks')     { populateProjectSelect(); renderTasks(); }
+  if (page==='habits')    renderHabits();
+  if (page==='projects')  renderProjects();
+  if (page==='planner')   renderPlanner();
 }
 
-// ─── TASKS ──────────────────────────────────────────────
+// ══════════════════════════════════════════════
+// TASKS
+// ══════════════════════════════════════════════
 async function loadTasks() {
-  const {data} = await supabase_client.from('tasks').select('*').order('created_at', {ascending: false});
+  const {data} = await sb.from('tasks').select('*').order('created_at', {ascending:false});
   allTasks = data || [];
+}
+
+function onTaskCatChange() {
+  const cat = document.getElementById('task-cat').value;
+  const sel = document.getElementById('task-project');
+  sel.style.display = cat === 'project' ? '' : 'none';
+  if (cat === 'project') populateProjectSelect();
+}
+
+function populateProjectSelect() {
+  const sel = document.getElementById('task-project');
+  sel.innerHTML = allProjects.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
 }
 
 async function addTask() {
   const title = document.getElementById('task-title').value.trim();
   if (!title) return;
-  const task = {
-    title,
-    category: document.getElementById('task-cat').value,
-    priority: document.getElementById('task-prio').value,
-    due_date: document.getElementById('task-due').value || null,
-    done: false
-  };
-  const {data, error} = await supabase_client.from('tasks').insert(task).select().single();
+  const cat = document.getElementById('task-cat').value;
+  const projId = cat === 'project' ? (document.getElementById('task-project').value || null) : null;
+  const task = { title, category: cat, priority: document.getElementById('task-prio').value, due_date: document.getElementById('task-due').value || null, done: false, project_id: projId };
+  const {data, error} = await sb.from('tasks').insert(task).select().single();
   if (!error) {
     allTasks.unshift(data);
     document.getElementById('task-title').value = '';
@@ -808,17 +525,17 @@ async function addTask() {
 }
 
 async function toggleTask(id) {
-  const task = allTasks.find(t => t.id === id);
-  if (!task) return;
-  task.done = !task.done;
-  await supabase_client.from('tasks').update({done: task.done}).eq('id', id);
+  const t = allTasks.find(t => t.id === id); if (!t) return;
+  t.done = !t.done;
+  await sb.from('tasks').update({done: t.done}).eq('id', id);
   renderTasks();
-  if (task.done) toast('تسک انجام شد 🎉');
+  renderDashboard();
+  if (t.done) toast('آفرین! تسک انجام شد 🎉');
 }
 
 async function deleteTask(id) {
   allTasks = allTasks.filter(t => t.id !== id);
-  await supabase_client.from('tasks').delete().eq('id', id);
+  await sb.from('tasks').delete().eq('id', id);
   renderTasks();
   toast('تسک حذف شد');
 }
@@ -829,7 +546,7 @@ function renderTasks() {
   let tasks = allTasks;
   if (currentFilter !== 'all') tasks = tasks.filter(t => t.category === currentFilter);
   const pending = tasks.filter(t => !t.done);
-  const done = tasks.filter(t => t.done).slice(0, 8);
+  const done    = tasks.filter(t => t.done).slice(0, 10);
   document.getElementById('tasks-pending').innerHTML = pending.length
     ? pending.map(taskHTML).join('')
     : '<div class="empty-state"><div class="empty-icon">✨</div>همه تسک‌ها انجام شده!</div>';
@@ -839,26 +556,29 @@ function renderTasks() {
 }
 
 function taskHTML(t) {
-  const due = t.due_date ? `<span class="task-meta">${new Date(t.due_date+'T12:00').toLocaleDateString('fa-IR',{month:'short',day:'numeric'})}</span>` : '';
-  const catLabel = {work:'💼',personal:'👤',project:'📁'}[t.category]||'';
+  const catMap = {work:'💼',personal:'👤',project:'📁'};
+  const catIcon = catMap[t.category] || '';
+  const projName = t.project_id ? (allProjects.find(p=>p.id===t.project_id)||{}).name : '';
+  const dueLabel = t.due_date ? `<span class="task-meta">${jalaliStr(t.due_date,'short')}</span>` : '';
+  const projLabel = projName ? `<span class="badge project">${esc(projName)}</span>` : '';
   return `<div class="task-item ${t.done?'done':''}">
     <div class="task-check ${t.done?'checked':''}" onclick="toggleTask('${t.id}')">${t.done?'✓':''}</div>
     <span class="task-title">${esc(t.title)}</span>
+    ${projLabel}
     <span class="badge ${t.priority}">${{high:'بالا',medium:'متوسط',low:'پایین'}[t.priority]}</span>
-    <span style="font-size:13px">${catLabel}</span>
-    ${due}
+    <span style="font-size:13px">${catIcon}</span>
+    ${dueLabel}
     <button class="task-del" onclick="deleteTask('${t.id}')">×</button>
   </div>`;
 }
 
-// ─── HABITS ─────────────────────────────────────────────
+// ══════════════════════════════════════════════
+// HABITS
+// ══════════════════════════════════════════════
 async function loadHabits() {
-  const {data: habits} = await supabase_client.from('habits').select('*').order('created_at');
-  const today = new Date();
-  const weekAgo = new Date(today); weekAgo.setDate(today.getDate()-6);
-  const {data: logs} = await supabase_client.from('habit_logs')
-    .select('*')
-    .gte('log_date', weekAgo.toISOString().split('T')[0]);
+  const {data:habits} = await sb.from('habits').select('*').order('created_at');
+  const startDate = new Date(); startDate.setDate(startDate.getDate()-89);
+  const {data:logs} = await sb.from('habit_logs').select('*').gte('log_date', startDate.toISOString().split('T')[0]);
   allHabits = habits || [];
   allHabitLogs = logs || [];
 }
@@ -866,57 +586,53 @@ async function loadHabits() {
 async function addHabit() {
   const name = document.getElementById('habit-name').value.trim();
   if (!name) return;
-  const {data, error} = await supabase_client.from('habits').insert({
-    name, icon: document.getElementById('habit-icon').value
-  }).select().single();
-  if (!error) {
-    allHabits.push(data);
-    document.getElementById('habit-name').value = '';
-    renderHabits();
-    toast('عادت اضافه شد 🔥');
-  }
+  const {data, error} = await sb.from('habits').insert({name, icon: document.getElementById('habit-icon').value}).select().single();
+  if (!error) { allHabits.push(data); document.getElementById('habit-name').value=''; renderHabits(); toast('عادت اضافه شد 🔥'); }
 }
 
 async function toggleHabitDay(habitId, dateStr) {
-  const existing = allHabitLogs.find(l => l.habit_id === habitId && l.log_date === dateStr);
+  const existing = allHabitLogs.find(l => l.habit_id===habitId && l.log_date===dateStr);
   if (existing) {
-    await supabase_client.from('habit_logs').delete().eq('id', existing.id);
+    await sb.from('habit_logs').delete().eq('id', existing.id);
     allHabitLogs = allHabitLogs.filter(l => l.id !== existing.id);
   } else {
-    const {data} = await supabase_client.from('habit_logs').insert({habit_id: habitId, log_date: dateStr}).select().single();
+    const {data} = await sb.from('habit_logs').insert({habit_id:habitId, log_date:dateStr}).select().single();
     if (data) allHabitLogs.push(data);
   }
-  updateStreak(habitId);
+  await updateStreak(habitId);
   renderHabits();
   renderDashboard();
 }
 
 async function updateStreak(habitId) {
-  const logs = allHabitLogs.filter(l => l.habit_id === habitId).map(l => l.log_date).sort().reverse();
+  const logs = allHabitLogs.filter(l=>l.habit_id===habitId).map(l=>l.log_date).sort().reverse();
   let streak = 0;
   const today = new Date();
-  for (let i = 0; i < 365; i++) {
-    const d = new Date(today); d.setDate(today.getDate() - i);
-    const ds = d.toISOString().split('T')[0];
-    if (logs.includes(ds)) streak++; else break;
+  for (let i=0; i<365; i++) {
+    const d = new Date(today); d.setDate(today.getDate()-i);
+    if (logs.includes(d.toISOString().split('T')[0])) streak++; else break;
   }
-  allHabits = allHabits.map(h => h.id === habitId ? {...h, streak} : h);
-  await supabase_client.from('habits').update({streak}).eq('id', habitId);
+  allHabits = allHabits.map(h => h.id===habitId ? {...h, streak} : h);
+  await sb.from('habits').update({streak}).eq('id', habitId);
 }
 
 async function deleteHabit(id) {
-  allHabits = allHabits.filter(h => h.id !== id);
-  await supabase_client.from('habits').delete().eq('id', id);
+  allHabits = allHabits.filter(h=>h.id!==id);
+  allHabitLogs = allHabitLogs.filter(l=>l.habit_id!==id);
+  await sb.from('habits').delete().eq('id', id);
   renderHabits();
   toast('عادت حذف شد');
 }
 
 function renderHabits() {
+  renderHabitCharts();
+  renderHabitTrackers();
+  renderHabitWeekCards();
+}
+
+function renderHabitWeekCards() {
   const container = document.getElementById('habits-list');
-  if (!allHabits.length) {
-    container.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🌱</div>اولین عادتت رو اضافه کن!</div>';
-    return;
-  }
+  if (!allHabits.length) { container.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🌱</div>اولین عادتت رو اضافه کن!</div>'; return; }
   container.innerHTML = allHabits.map(h => habitCardHTML(h)).join('');
 }
 
@@ -924,28 +640,105 @@ function habitCardHTML(h) {
   const today = new Date();
   const days = Array.from({length:7}, (_,i) => {
     const d = new Date(today); d.setDate(today.getDate()-6+i);
-    return {date: d.toISOString().split('T')[0], label: DAYS_FA[d.getDay()], isToday: i===6};
+    const ds = d.toISOString().split('T')[0];
+    const [jy,jm,jd] = toJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
+    const dow = d.getDay(); // 0=sun
+    const label = J_DAYS_SHORT[dow===0?6:dow-1];
+    return {date:ds, label, isToday:i===6, jd};
   });
-  const logDates = allHabitLogs.filter(l => l.habit_id === h.id).map(l => l.log_date);
+  const logDates = allHabitLogs.filter(l=>l.habit_id===h.id).map(l=>l.log_date);
   const daysHTML = days.map(d => {
     const done = logDates.includes(d.date);
-    return `<div class="habit-day ${done?'done':''} ${d.isToday?'today-marker':''}" onclick="toggleHabitDay('${h.id}','${d.date}')" title="${d.date}">${d.label}</div>`;
+    return `<div class="habit-day ${done?'done':''} ${d.isToday?'today-marker':''}" onclick="toggleHabitDay('${h.id}','${d.date}')" title="${jalaliStr(d.date,'short')}">${d.label}</div>`;
   }).join('');
   return `<div class="habit-card">
     <div class="habit-header">
       <span style="font-size:1.3rem">${h.icon}</span>
       <span class="habit-name">${esc(h.name)}</span>
       <span class="habit-streak">🔥 ${h.streak}</span>
-      <button onclick="deleteHabit('${h.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;margin-right:4px">×</button>
+      <button onclick="deleteHabit('${h.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;margin-right:4px">×</button>
     </div>
     <div class="habit-week">${daysHTML}</div>
   </div>`;
 }
 
-// ─── PROJECTS ─────────────────────────────────────────────
+function renderHabitCharts() {
+  destroyChart('habit-donut');
+  const grid = document.getElementById('habit-charts-grid');
+  if (!allHabits.length) { grid.innerHTML=''; return; }
+
+  // Last 30 days completion rate per habit
+  const today = new Date();
+  const last30 = Array.from({length:30}, (_,i) => { const d=new Date(today); d.setDate(today.getDate()-29+i); return d.toISOString().split('T')[0]; });
+
+  // Bar chart: daily habit completion count last 14 days
+  const last14 = last30.slice(16);
+  const barData = last14.map(dateStr => allHabitLogs.filter(l => l.log_date === dateStr).length);
+  const barLabels = last14.map(d => { const [jy,jm,jd]=toJalali(...d.split('-').map(Number)); return `${jd}/${jm}`; });
+
+  // Donut: this week's habit completion per habit
+  const weekDates = Array.from({length:7}, (_,i) => { const d=new Date(today); d.setDate(today.getDate()-6+i); return d.toISOString().split('T')[0]; });
+  const donutData = allHabits.map(h => weekDates.filter(d => allHabitLogs.find(l=>l.habit_id===h.id&&l.log_date===d)).length);
+  const maxWeek = 7;
+
+  grid.innerHTML = `
+    <div class="chart-wrap"><div class="chart-title">انجام عادت‌ها — ۱۴ روز اخیر</div><canvas id="chart-habit-bar" height="160"></canvas></div>
+    <div class="chart-wrap"><div class="chart-title">میزان انجام هر عادت این هفته</div><canvas id="chart-habit-donut" height="160"></canvas></div>
+  `;
+
+  const colors = ['#2563eb','#0d9488','#d97706','#dc2626','#7c3aed','#059669','#db2777','#ea580c'];
+
+  requestAnimationFrame(() => {
+    const barCtx = document.getElementById('chart-habit-bar');
+    if (barCtx) {
+      destroyChart('habit-bar');
+      chartInstances['habit-bar'] = new Chart(barCtx, {
+        type:'bar',
+        data:{ labels:barLabels, datasets:[{label:'تعداد عادت انجام‌شده', data:barData, backgroundColor:'rgba(37,99,235,0.15)', borderColor:'#2563eb', borderWidth:2, borderRadius:6}]},
+        options:{ plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true, max:allHabits.length||1, ticks:{stepSize:1, font:{family:'Vazirmatn'}}, grid:{color:'rgba(0,0,0,0.05)'}}, x:{ticks:{font:{family:'Vazirmatn'}}, grid:{display:false}} } }
+      });
+    }
+    const donutCtx = document.getElementById('chart-habit-donut');
+    if (donutCtx && allHabits.length) {
+      destroyChart('habit-donut');
+      chartInstances['habit-donut'] = new Chart(donutCtx, {
+        type:'doughnut',
+        data:{ labels:allHabits.map(h=>h.icon+' '+h.name), datasets:[{data:donutData, backgroundColor:colors.slice(0,allHabits.length), borderWidth:2, borderColor:'#fff'}]},
+        options:{ plugins:{ legend:{ position:'right', labels:{font:{family:'Vazirmatn',size:11}, boxWidth:12} } }, cutout:'65%' }
+      });
+    }
+  });
+}
+
+function renderHabitTrackers() {
+  const container = document.getElementById('habit-trackers');
+  if (!allHabits.length) { container.innerHTML=''; return; }
+  const today = new Date();
+  // Show last 90 days
+  const days = Array.from({length:90}, (_,i) => { const d=new Date(today); d.setDate(today.getDate()-89+i); return d.toISOString().split('T')[0]; });
+
+  container.innerHTML = allHabits.map(h => {
+    const logSet = new Set(allHabitLogs.filter(l=>l.habit_id===h.id).map(l=>l.log_date));
+    const total = logSet.size;
+    const pct = Math.round(total/90*100);
+    const cells = days.map(d => `<div class="tracker-cell${logSet.has(d)?' done':''}" title="${jalaliStr(d,'short')}"></div>`).join('');
+    return `<div class="habit-tracker">
+      <div class="tracker-header">
+        <span>${h.icon} <strong>${esc(h.name)}</strong></span>
+        <span style="font-size:12px;color:var(--text2)">${total} روز از ۹۰ روز (${pct}%)</span>
+        <span class="habit-streak">🔥 ${h.streak}</span>
+      </div>
+      <div class="tracker-grid">${cells}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+// PROJECTS
+// ══════════════════════════════════════════════
 async function loadProjects() {
-  const {data: projects} = await supabase_client.from('projects').select('*').order('created_at');
-  const {data: ptasks} = await supabase_client.from('project_tasks').select('*');
+  const {data:projects} = await sb.from('projects').select('*').order('created_at');
+  const {data:ptasks}   = await sb.from('project_tasks').select('*').order('created_at');
   allProjects = projects || [];
   allProjectTasks = ptasks || [];
 }
@@ -953,94 +746,121 @@ async function loadProjects() {
 async function addProject() {
   const name = document.getElementById('proj-name').value.trim();
   if (!name) return;
-  const {data, error} = await supabase_client.from('projects').insert({
-    name, deadline: document.getElementById('proj-deadline').value || null
-  }).select().single();
-  if (!error) {
-    allProjects.push(data);
-    document.getElementById('proj-name').value = '';
-    document.getElementById('proj-deadline').value = '';
-    renderProjects();
-    toast('پروژه اضافه شد 📁');
-  }
+  const {data, error} = await sb.from('projects').insert({name, deadline: document.getElementById('proj-deadline').value||null}).select().single();
+  if (!error) { allProjects.push(data); document.getElementById('proj-name').value=''; document.getElementById('proj-deadline').value=''; renderProjects(); toast('پروژه اضافه شد 📁'); }
 }
 
 async function addProjectTask(projId) {
-  const input = document.getElementById('ptask-' + projId);
-  const title = input.value.trim();
+  const titleEl = document.getElementById('ptask-title-'+projId);
+  const dueEl   = document.getElementById('ptask-due-'+projId);
+  const prioEl  = document.getElementById('ptask-prio-'+projId);
+  const title   = titleEl.value.trim();
   if (!title) return;
-  const {data, error} = await supabase_client.from('project_tasks').insert({project_id: projId, title}).select().single();
+  const {data, error} = await sb.from('project_tasks').insert({project_id:projId, title, due_date: dueEl.value||null, priority: prioEl.value}).select().single();
   if (!error) {
     allProjectTasks.push(data);
-    input.value = '';
+    // Also add to main tasks list
+    const taskData = { title, category:'project', priority: prioEl.value, due_date: dueEl.value||null, done:false, project_id: projId };
+    const {data:t2} = await sb.from('tasks').insert(taskData).select().single();
+    if (t2) allTasks.unshift(t2);
+    titleEl.value=''; dueEl.value='';
     renderProjects();
+    toast('زیرتسک اضافه شد');
   }
 }
 
 async function toggleProjectTask(id) {
-  const pt = allProjectTasks.find(t => t.id === id);
-  if (!pt) return;
+  const pt = allProjectTasks.find(t=>t.id===id); if (!pt) return;
   pt.done = !pt.done;
-  await supabase_client.from('project_tasks').update({done: pt.done}).eq('id', id);
+  await sb.from('project_tasks').update({done:pt.done}).eq('id', id);
+  // Sync with main tasks
+  const mt = allTasks.find(t => t.project_id===pt.project_id && t.title===pt.title);
+  if (mt) { mt.done = pt.done; await sb.from('tasks').update({done:pt.done}).eq('id', mt.id); }
   renderProjects();
 }
 
 async function deleteProject(id) {
-  allProjects = allProjects.filter(p => p.id !== id);
-  allProjectTasks = allProjectTasks.filter(t => t.project_id !== id);
-  await supabase_client.from('projects').delete().eq('id', id);
+  allProjects = allProjects.filter(p=>p.id!==id);
+  allProjectTasks = allProjectTasks.filter(t=>t.project_id!==id);
+  await sb.from('projects').delete().eq('id', id);
   renderProjects();
   toast('پروژه حذف شد');
 }
 
 function renderProjects() {
+  renderProjectChart();
   const container = document.getElementById('projects-list');
-  if (!allProjects.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🚀</div>اولین پروژه‌ات رو شروع کن!</div>';
-    return;
-  }
+  if (!allProjects.length) { container.innerHTML='<div class="empty-state"><div class="empty-icon">🚀</div>اولین پروژه‌ات رو شروع کن!</div>'; return; }
   container.innerHTML = allProjects.map(p => {
-    const ptasks = allProjectTasks.filter(t => t.project_id === p.id);
-    const done = ptasks.filter(t => t.done).length;
-    const pct = ptasks.length ? Math.round(done / ptasks.length * 100) : 0;
-    const dl = p.deadline ? new Date(p.deadline+'T12:00').toLocaleDateString('fa-IR',{month:'long',day:'numeric'}) : '';
+    const ptasks = allProjectTasks.filter(t=>t.project_id===p.id);
+    const done   = ptasks.filter(t=>t.done).length;
+    const pct    = ptasks.length ? Math.round(done/ptasks.length*100) : 0;
+    const dl     = p.deadline ? jalaliStr(p.deadline,'short') : '';
     return `<div class="project-card">
       <div class="project-header">
         <span style="font-size:1.2rem">📁</span>
         <span class="project-name">${esc(p.name)}</span>
-        ${dl ? `<span style="font-size:11px;color:var(--text3)">${dl}</span>` : ''}
+        ${dl?`<span style="font-size:11px;color:var(--text3);background:var(--bg3);padding:3px 8px;border-radius:12px">📅 ${dl}</span>`:''}
         <button onclick="deleteProject('${p.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">×</button>
       </div>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-      <div class="project-stats">
-        <span>${done}/${ptasks.length} تسک</span>
-        <span>${pct}% پیشرفت</span>
-      </div>
-      <div class="task-list" style="margin-top:12px">
+      <div class="project-stats"><span>${done}/${ptasks.length} زیرتسک</span><span>${pct}% پیشرفت</span></div>
+      <div class="task-list" style="margin-top:10px">
         ${ptasks.map(t => `<div class="task-item ${t.done?'done':''}">
           <div class="task-check ${t.done?'checked':''}" onclick="toggleProjectTask('${t.id}')">${t.done?'✓':''}</div>
           <span class="task-title">${esc(t.title)}</span>
+          ${t.priority?`<span class="badge ${t.priority}">${{high:'بالا',medium:'متوسط',low:'پایین'}[t.priority]}</span>`:''}
+          ${t.due_date?`<span class="task-meta">${jalaliStr(t.due_date,'short')}</span>`:''}
         </div>`).join('')}
       </div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <input class="form-input" id="ptask-${p.id}" placeholder="زیرتسک جدید..." style="font-size:12px;padding:7px 10px" onkeydown="if(event.key==='Enter')addProjectTask('${p.id}')" />
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center">
+        <input class="form-input" id="ptask-title-${p.id}" placeholder="زیرتسک جدید..." style="flex:2;font-size:12px;padding:7px 10px" onkeydown="if(event.key==='Enter')addProjectTask('${p.id}')" />
+        <input class="form-input" id="ptask-due-${p.id}" type="date" style="flex:0.7;font-size:12px;padding:7px 10px;direction:ltr" />
+        <select class="form-select" id="ptask-prio-${p.id}" style="font-size:12px;padding:7px 10px">
+          <option value="high">🔴 بالا</option>
+          <option value="medium" selected>🟡 متوسط</option>
+          <option value="low">🟢 پایین</option>
+        </select>
         <button class="btn-sm" onclick="addProjectTask('${p.id}')">+ افزودن</button>
       </div>
     </div>`;
   }).join('');
 }
 
-// ─── PLANNER ─────────────────────────────────────────────
+function renderProjectChart() {
+  destroyChart('projects');
+  const wrap = document.getElementById('projects-chart-wrap');
+  if (!allProjects.length) { wrap.style.display='none'; return; }
+  wrap.style.display='';
+  const labels = allProjects.map(p=>p.name);
+  const data   = allProjects.map(p => {
+    const pt = allProjectTasks.filter(t=>t.project_id===p.id);
+    return pt.length ? Math.round(pt.filter(t=>t.done).length/pt.length*100) : 0;
+  });
+  requestAnimationFrame(() => {
+    const ctx = document.getElementById('chart-projects');
+    if (!ctx) return;
+    chartInstances['projects'] = new Chart(ctx, {
+      type:'bar',
+      data:{ labels, datasets:[{label:'پیشرفت %', data, backgroundColor:data.map(v=>v>70?'rgba(5,150,105,.2)':v>40?'rgba(37,99,235,.15)':'rgba(217,119,6,.15)'), borderColor:data.map(v=>v>70?'#059669':v>40?'#2563eb':'#d97706'), borderWidth:2, borderRadius:8}] },
+      options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%',font:{family:'Vazirmatn'}},grid:{color:'rgba(0,0,0,0.05)'}}, y:{ticks:{font:{family:'Vazirmatn'}},grid:{display:false}} } }
+    });
+  });
+}
+
+// ══════════════════════════════════════════════
+// PLANNER
+// ══════════════════════════════════════════════
 async function loadPlanner() {
-  const {data} = await supabase_client.from('planner_slots').select('*').eq('slot_date', plannerDate);
+  const {data} = await sb.from('planner_slots').select('*').eq('slot_date', plannerDate);
   plannerSlots = {};
-  (data || []).forEach(s => { plannerSlots[s.hour] = {id: s.id, content: s.content}; });
+  (data||[]).forEach(s => { plannerSlots[s.hour] = {id:s.id, content:s.content}; });
   renderPlanner();
 }
 
 function renderPlanner() {
   const el = document.getElementById('planner-date-label');
-  if (el) el.textContent = new Date(plannerDate+'T12:00').toLocaleDateString('fa-IR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  if (el) el.textContent = jalaliStr(plannerDate, 'full');
   const container = document.getElementById('time-blocks');
   if (!container) return;
   container.innerHTML = HOURS.map(h => {
@@ -1060,77 +880,93 @@ async function savePlannerSlot(hour, content) {
   const existing = plannerSlots[hour];
   if (!content && !existing) return;
   if (existing && existing.content === content) return;
-
   if (!content && existing) {
-    await supabase_client.from('planner_slots').delete().eq('id', existing.id);
+    await sb.from('planner_slots').delete().eq('id', existing.id);
     delete plannerSlots[hour];
   } else if (existing) {
-    await supabase_client.from('planner_slots').update({content}).eq('id', existing.id);
+    await sb.from('planner_slots').update({content}).eq('id', existing.id);
     plannerSlots[hour].content = content;
   } else {
-    const {data} = await supabase_client.from('planner_slots').insert({slot_date: plannerDate, hour, content}).select().single();
-    if (data) plannerSlots[hour] = {id: data.id, content};
+    const {data} = await sb.from('planner_slots').insert({slot_date:plannerDate, hour, content}).select().single();
+    if (data) plannerSlots[hour] = {id:data.id, content};
   }
   renderPlanner();
 }
 
 function changeDay(delta) {
-  const d = new Date(plannerDate+'T12:00');
-  d.setDate(d.getDate() + delta);
+  const d = new Date(plannerDate+'T12:00'); d.setDate(d.getDate()+delta);
   plannerDate = d.toISOString().split('T')[0];
   document.getElementById('planner-date').value = plannerDate;
   loadPlanner();
 }
+function goToday() { plannerDate=todayStr(); document.getElementById('planner-date').value=plannerDate; loadPlanner(); }
 
-function goToday() {
-  plannerDate = new Date().toISOString().split('T')[0];
-  document.getElementById('planner-date').value = plannerDate;
-  loadPlanner();
-}
-
-// ─── DASHBOARD ─────────────────────────────────────────────
+// ══════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════
 function renderDashboard() {
-  const today = new Date().toISOString().split('T')[0];
-  const todayTasks = allTasks.filter(t => !t.done && (t.due_date === today || !t.due_date)).slice(0,5);
-  const todayDone = allTasks.filter(t => t.done && t.due_date === today).length;
-  const totalPending = allTasks.filter(t => !t.done).length;
-  const todayLogs = allHabitLogs.filter(l => l.log_date === today);
-  const habitRate = allHabits.length ? Math.round(todayLogs.length / allHabits.length * 100) : 0;
-  const activeProjects = allProjects.length;
+  const today = todayStr();
+  const pending   = allTasks.filter(t=>!t.done).length;
+  const todayLogs = allHabitLogs.filter(l=>l.log_date===today);
+  const habitRate = allHabits.length ? Math.round(todayLogs.length/allHabits.length*100) : 0;
+  const doneToday = allTasks.filter(t=>t.done && t.due_date===today).length;
+  const projCount = allProjects.length;
 
   document.getElementById('dash-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-label">تسک‌های در انتظار</div><div class="stat-value amber">${totalPending}</div></div>
+    <div class="stat-card"><div class="stat-label">تسک‌های در انتظار</div><div class="stat-value amber">${pending}</div></div>
     <div class="stat-card"><div class="stat-label">عادت‌های امروز</div><div class="stat-value green">${todayLogs.length}/${allHabits.length}</div></div>
-    <div class="stat-card"><div class="stat-label">پروژه‌های فعال</div><div class="stat-value accent">${activeProjects}</div></div>
-    <div class="stat-card"><div class="stat-label">میزان انجام عادت‌ها</div><div class="stat-value blue">${habitRate}%</div></div>
+    <div class="stat-card"><div class="stat-label">درصد انجام عادت‌ها</div><div class="stat-value accent">${habitRate}%</div></div>
+    <div class="stat-card"><div class="stat-label">پروژه‌های فعال</div><div class="stat-value blue">${projCount}</div></div>
   `;
 
-  const dashTasks = document.getElementById('dash-tasks');
-  dashTasks.innerHTML = todayTasks.length
+  // Tasks chart — last 7 days done vs created
+  const last7 = Array.from({length:7}, (_,i) => { const d=new Date(); d.setDate(d.getDate()-6+i); return d.toISOString().split('T')[0]; });
+  const doneByDay = last7.map(d => allTasks.filter(t=>t.done && t.due_date===d).length);
+  const labels7   = last7.map(d => { const [jy,jm,jd]=toJalali(...d.split('-').map(Number)); return `${jd}/${jm}`; });
+
+  destroyChart('tasks-week');
+  requestAnimationFrame(() => {
+    const ctx1 = document.getElementById('chart-tasks-week');
+    if (ctx1) chartInstances['tasks-week'] = new Chart(ctx1, {
+      type:'line',
+      data:{ labels:labels7, datasets:[{label:'تسک انجام‌شده', data:doneByDay, borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.08)', tension:0.4, fill:true, pointBackgroundColor:'#2563eb', pointRadius:4}] },
+      options:{ plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true,ticks:{stepSize:1,font:{family:'Vazirmatn'}},grid:{color:'rgba(0,0,0,0.05)'}}, x:{ticks:{font:{family:'Vazirmatn'}},grid:{display:false}} } }
+    });
+
+    // Habits week chart
+    destroyChart('habits-week');
+    const ctx2 = document.getElementById('chart-habits-week');
+    const habWeekData = last7.map(d => allHabitLogs.filter(l=>l.log_date===d).length);
+    if (ctx2) chartInstances['habits-week'] = new Chart(ctx2, {
+      type:'bar',
+      data:{ labels:labels7, datasets:[{label:'عادت‌های انجام‌شده', data:habWeekData, backgroundColor:'rgba(13,148,136,0.15)', borderColor:'#0d9488', borderWidth:2, borderRadius:6}] },
+      options:{ plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true,max:Math.max(allHabits.length,1),ticks:{stepSize:1,font:{family:'Vazirmatn'}},grid:{color:'rgba(0,0,0,0.05)'}}, x:{ticks:{font:{family:'Vazirmatn'}},grid:{display:false}} } }
+    });
+  });
+
+  const todayTasks = allTasks.filter(t=>!t.done).slice(0,6);
+  document.getElementById('dash-tasks').innerHTML = todayTasks.length
     ? todayTasks.map(taskHTML).join('')
-    : '<div class="empty-state"><div class="empty-icon">🎉</div>هیچ تسک فوری‌ای نداری!</div>';
-
-  const dashHabits = document.getElementById('dash-habits');
-  dashHabits.innerHTML = allHabits.length
-    ? allHabits.slice(0,4).map(h => habitCardHTML(h)).join('')
-    : '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🌱</div>هنوز عادتی ثبت نشده</div>';
+    : '<div class="empty-state"><div class="empty-icon">🎉</div>هیچ تسک بازی نداری!</div>';
 }
 
-// ─── UTILS ─────────────────────────────────────────────
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+function destroyChart(key) {
+  if (chartInstances[key]) { try { chartInstances[key].destroy(); } catch(e){} delete chartInstances[key]; }
 }
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 let toastTimer;
 function toast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
+  el.textContent = msg; el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
-// ─── AUTO-LOGIN ─────────────────────────────────────────
 window.addEventListener('load', () => {
   const url = localStorage.getItem('los_url');
   const key = localStorage.getItem('los_key');
@@ -1140,35 +976,6 @@ window.addEventListener('load', () => {
     initSupabase();
   }
 });
-</script>
-
-<!-- SQL HELPER SCRIPT -->
-<script>
-// Supabase RPC helper — اگر exec_sql وجود نداشت، جداول رو دستی میسازیم
-(async function patchSetup() {
-  const origSetup = window.setupTables;
-  window.setupTables = async function() {
-    if (!supabase_client) return;
-    // Check if tables exist by trying to query them
-    const tables = ['tasks', 'habits', 'habit_logs', 'projects', 'project_tasks', 'planner_slots'];
-    for (const t of tables) {
-      const {error} = await supabase_client.from(t).select('id').limit(1);
-      if (error && error.code === '42P01') {
-        document.getElementById('config-error').innerHTML =
-          `⚠️ جداول وجود ندارند. لطفاً در <strong>Supabase → SQL Editor</strong> این SQL رو اجرا کن و دوباره تلاش کن:<br><br>
-          <textarea style="width:100%;height:120px;font-size:10px;background:#111;color:#0f0;border:none;padding:8px;border-radius:6px;font-family:monospace;resize:none">
-CREATE TABLE IF NOT EXISTS tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, title text NOT NULL, category text DEFAULT 'personal', priority text DEFAULT 'medium', due_date date, done boolean DEFAULT false, created_at timestamptz DEFAULT now());
-CREATE TABLE IF NOT EXISTS habits (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, icon text DEFAULT '🎯', streak int DEFAULT 0, created_at timestamptz DEFAULT now());
-CREATE TABLE IF NOT EXISTS habit_logs (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, habit_id uuid REFERENCES habits(id) ON DELETE CASCADE, log_date date NOT NULL, done boolean DEFAULT true, UNIQUE(habit_id, log_date));
-CREATE TABLE IF NOT EXISTS projects (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, deadline date, created_at timestamptz DEFAULT now());
-CREATE TABLE IF NOT EXISTS project_tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, project_id uuid REFERENCES projects(id) ON DELETE CASCADE, title text NOT NULL, done boolean DEFAULT false);
-CREATE TABLE IF NOT EXISTS planner_slots (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, slot_date date NOT NULL, hour text NOT NULL, content text, UNIQUE(slot_date, hour));
-          </textarea>`;
-        throw new Error('جداول وجود ندارند');
-      }
-    }
-  };
-})();
 </script>
 </body>
 </html>
