@@ -682,7 +682,12 @@ function renderHabitsPanel(){
   var ws=currentWeekSat;
   var container=document.getElementById("habits-panel");
   if(!cache.habits.length){
-    container.innerHTML=`<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem">هنوز عادتی ثبت نشده</div>`;
+    container.innerHTML=`<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem">هنوز عادتی ثبت نشده</div>
+      <div class="habit-add-row">
+        <input class="habit-inp" id="new-habit-inp" placeholder="عادت جدید (مثلاً: باشگاه)..." onkeydown="if(event.key==='Enter')addHabit()"/>
+        <button class="btn-xs" onclick="addHabit()">+</button>
+      </div>`;
+    return;
   } else {
     var thead=`<tr><th></th>${DAYS_SHORT.map(d=>`<th>${d}</th>`).join("")}<th style="min-width:30px">%</th></tr>`;
     var tbody=cache.habits.map(h=>{
