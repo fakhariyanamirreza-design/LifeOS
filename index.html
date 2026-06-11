@@ -2,979 +2,901 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Life OS</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' font-family='sans-serif'%3E⚡%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%232563eb'/%3E%3Ctext x='90' y='125' font-size='100' text-anchor='middle' font-family='sans-serif'%3E⚡%3C/text%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>پلنر هفتگی</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%235b6af0'/%3E%3Ctext x='32' y='46' font-size='36' text-anchor='middle'%3E📅%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%235b6af0'/%3E%3Ctext x='90' y='128' font-size='100' text-anchor='middle'%3E📅%3C/text%3E%3C/svg%3E">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Life OS">
-<meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-title" content="پلنر هفتگی">
+<meta name="theme-color" content="#5b6af0">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif !important; }
-:root {
-  --bg:       #f0f4ff;
-  --bg2:      #ffffff;
-  --bg3:      #e8eef8;
-  --border:   rgba(37,99,235,0.1);
-  --border2:  rgba(37,99,235,0.2);
-  --text:     #1e293b;
-  --text2:    #475569;
-  --text3:    #94a3b8;
-  --accent:   #2563eb;
-  --accent2:  #1d4ed8;
-  --accent-bg:#dbeafe;
-  --green:    #059669;
-  --green-bg: #d1fae5;
-  --amber:    #d97706;
-  --amber-bg: #fef3c7;
-  --red:      #dc2626;
-  --red-bg:   #fee2e2;
-  --blue:     #0284c7;
-  --blue-bg:  #e0f2fe;
-  --teal:     #0d9488;
-  --teal-bg:  #ccfbf1;
-  --radius:   14px;
-  --radius-sm:8px;
-  --shadow:   0 2px 16px rgba(37,99,235,0.08);
-  --shadow2:  0 4px 24px rgba(37,99,235,0.14);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-family:"Vazirmatn",sans-serif!important}
+:root{
+  --bg:#f7f8ff;
+  --bg2:#ffffff;
+  --bg3:#eef0fb;
+  --border:rgba(91,106,240,.1);
+  --border2:rgba(91,106,240,.2);
+  --text:#1a1d2e;
+  --text2:#565d7a;
+  --text3:#9ba3c4;
+  --sat:#5b6af0; --sat-bg:#eef0ff; --sat-light:#f5f6ff;
+  --sun:#f97316; --sun-bg:#fff3eb; --sun-light:#fffaf6;
+  --mon:#10b981; --mon-bg:#ecfdf5; --mon-light:#f5fdf9;
+  --tue:#f59e0b; --tue-bg:#fffbeb; --tue-light:#fffef5;
+  --wed:#3b82f6; --wed-bg:#eff6ff; --wed-light:#f7fbff;
+  --thu:#8b5cf6; --thu-bg:#f5f3ff; --thu-light:#faf9ff;
+  --fri:#ec4899; --fri-bg:#fdf2f8; --fri-light:#fef9fc;
+  --green:#059669; --green-bg:#d1fae5;
+  --red:#dc2626; --red-bg:#fee2e2;
+  --amber:#d97706; --amber-bg:#fef3c7;
+  --r:12px; --r-sm:8px; --r-lg:18px;
+  --sh:0 1px 3px rgba(26,29,46,.06),0 4px 12px rgba(91,106,240,.07);
+  --sh2:0 8px 32px rgba(91,106,240,.15);
 }
-body { background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.6; }
+body{background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
 
-/* ── CONFIG ── */
-#config-screen {
-  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem;
-  background: linear-gradient(135deg,#eff6ff 0%,#e0e7ff 100%);
+/* ══ CONFIG ══ */
+#cfg{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:linear-gradient(135deg,#f0f1ff,#e8eaff)}
+.cfg-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-lg);padding:2.5rem;width:100%;max-width:460px;box-shadow:var(--sh2)}
+.cfg-logo{font-size:1.6rem;font-weight:800;color:var(--sat);margin-bottom:.2rem}
+.cfg-sub{color:var(--text2);font-size:13px;margin-bottom:2rem}
+.cfg-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block}
+.cfg-inp{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text);font-size:13px;padding:10px 14px;margin-bottom:1rem;outline:none;transition:border-color .2s;direction:ltr}
+.cfg-inp:focus{border-color:var(--sat);box-shadow:0 0 0 3px rgba(91,106,240,.1)}
+.cfg-note{background:#eef0ff;border:1px solid rgba(91,106,240,.2);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:var(--text2);margin-bottom:1.5rem;line-height:1.8}
+.cfg-note strong{color:var(--sat)}.cfg-note a{color:var(--sat)}
+.btn-main{width:100%;background:var(--sat);color:#fff;border:none;border-radius:var(--r-sm);padding:12px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-main:hover{background:#4a59e8;transform:translateY(-1px)}
+.cfg-err{color:var(--red);font-size:12px;margin-top:10px;text-align:center;line-height:1.6}
+
+/* ══ APP LAYOUT ══ */
+#app{display:none;min-height:100vh;display:none}
+.topbar{position:sticky;top:0;z-index:100;background:var(--bg2);border-bottom:1px solid var(--border);padding:.875rem 1.5rem;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(91,106,240,.06)}
+.topbar-logo{font-size:1rem;font-weight:800;color:var(--sat)}
+.topbar-week{font-size:13px;font-weight:600;color:var(--text2);flex:1}
+.topbar-nav{display:flex;gap:6px}
+.tnav{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);color:var(--text2);background:transparent;transition:all .15s}
+.tnav:hover{border-color:var(--sat);color:var(--sat)}
+.tnav.active{background:var(--sat);color:#fff;border-color:var(--sat)}
+.app-body{padding:1.25rem 1.5rem}
+
+/* ══ WEEK VIEW ══ */
+.week-header{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap}
+.week-focus-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1.25rem;box-shadow:var(--sh);display:flex;gap:12px;align-items:flex-start}
+.week-focus-label{font-size:11px;font-weight:700;color:var(--sat);white-space:nowrap;padding-top:3px;letter-spacing:.3px}
+.week-focus-input{flex:1;border:none;outline:none;font-size:14px;color:var(--text);background:transparent;resize:none;line-height:1.5;font-weight:500}
+.week-focus-input::placeholder{color:var(--text3)}
+
+/* ══ DAYS GRID ══ */
+.days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:1.25rem}
+.day-col{border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);border:1px solid var(--border)}
+.day-col.today-col{box-shadow:var(--sh2);border-width:2px}
+.day-header{padding:.625rem .75rem;text-align:center;cursor:pointer}
+.day-name{font-size:12px;font-weight:700;margin-bottom:2px}
+.day-date{font-size:10px;opacity:.75;font-weight:500}
+.day-body{background:var(--bg2);padding:.625rem .75rem}
+
+/* Per-day color scheme */
+.day-col.d0 .day-header{background:var(--sat-bg)}.day-col.d0 .day-name{color:var(--sat)}.day-col.d0.today-col{border-color:var(--sat)}
+.day-col.d1 .day-header{background:var(--sun-bg)}.day-col.d1 .day-name{color:var(--sun)}.day-col.d1.today-col{border-color:var(--sun)}
+.day-col.d2 .day-header{background:var(--mon-bg)}.day-col.d2 .day-name{color:var(--mon)}.day-col.d2.today-col{border-color:var(--mon)}
+.day-col.d3 .day-header{background:var(--tue-bg)}.day-col.d3 .day-name{color:var(--tue)}.day-col.d3.today-col{border-color:var(--tue)}
+.day-col.d4 .day-header{background:var(--wed-bg)}.day-col.d4 .day-name{color:var(--wed)}.day-col.d4.today-col{border-color:var(--wed)}
+.day-col.d5 .day-header{background:var(--thu-bg)}.day-col.d5 .day-name{color:var(--thu)}.day-col.d5.today-col{border-color:var(--thu)}
+.day-col.d6 .day-header{background:var(--fri-bg)}.day-col.d6 .day-name{color:var(--fri)}.day-col.d6.today-col{border-color:var(--fri)}
+
+/* ══ PRIORITIES ══ */
+.priorities-section{margin-bottom:.75rem}
+.sec-mini-label{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+.priority-row{display:flex;align-items:flex-start;gap:5px;margin-bottom:3px}
+.pnum{width:14px;height:14px;border-radius:50%;background:var(--sat);color:#fff;font-size:8px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.day-col.d1 .pnum{background:var(--sun)}.day-col.d2 .pnum{background:var(--mon)}.day-col.d3 .pnum{background:var(--tue)}.day-col.d4 .pnum{background:var(--wed)}.day-col.d5 .pnum{background:var(--thu)}.day-col.d6 .pnum{background:var(--fri)}
+.pinput{flex:1;border:none;outline:none;font-size:10px;color:var(--text);background:transparent;resize:none;line-height:1.4;padding:0}
+.pinput::placeholder{color:var(--text3)}
+
+/* ══ EVENTS ══ */
+.events-section{margin-bottom:.75rem}
+.event-row{display:flex;gap:5px;align-items:flex-start;margin-bottom:4px}
+.etime{font-size:9px;color:var(--text3);white-space:nowrap;padding-top:2px;min-width:28px;direction:ltr}
+.etime-input{width:34px;border:none;outline:none;font-size:9px;color:var(--text2);background:transparent;padding:0;direction:ltr}
+.event-input{flex:1;border:none;outline:none;font-size:10px;color:var(--text);background:transparent;resize:none;line-height:1.4;padding:0}
+.event-input::placeholder{color:var(--text3)}
+.add-event-btn{font-size:9px;color:var(--text3);cursor:pointer;padding:0 2px;background:none;border:none;transition:color .15s}
+.add-event-btn:hover{color:var(--sat)}
+
+/* ══ TASKS ══ */
+.tasks-section{}
+.task-row{display:flex;align-items:flex-start;gap:5px;margin-bottom:3px}
+.tchk{width:12px;height:12px;border:1.5px solid var(--border2);border-radius:3px;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.tchk.on{background:var(--green);border-color:var(--green)}
+.tchk.on::after{content:"✓";font-size:7px;color:#fff;font-weight:800}
+.tinput{flex:1;border:none;outline:none;font-size:10px;color:var(--text);background:transparent;resize:none;line-height:1.4;padding:0}
+.tinput::placeholder{color:var(--text3)}
+.tinput.done-text{text-decoration:line-through;color:var(--text3)}
+.task-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:10px;padding:0;opacity:0;transition:opacity .15s}
+.task-row:hover .task-del{opacity:1}
+.task-del:hover{color:var(--red)}
+.add-task-btn{font-size:9px;color:var(--text3);cursor:pointer;display:flex;align-items:center;gap:3px;background:none;border:none;margin-top:4px;transition:color .15s}
+.add-task-btn:hover{color:var(--sat)}
+.completion-bar{height:3px;background:var(--bg3);border-radius:2px;margin-top:6px;overflow:hidden}
+.completion-fill{height:100%;border-radius:2px;transition:width .4s}
+
+/* ══ LEFT PANEL (habits + weekly tasks + reminders) ══ */
+.left-panel{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+.panel-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem;box-shadow:var(--sh)}
+.panel-title{font-size:12px;font-weight:800;color:var(--text);margin-bottom:.875rem;display:flex;align-items:center;gap:6px}
+.panel-title-icon{font-size:.9rem}
+
+/* ══ HABITS TABLE ══ */
+.habits-table{width:100%;border-collapse:collapse}
+.habits-table th{font-size:9px;font-weight:700;color:var(--text3);text-align:center;padding:2px 4px}
+.habits-table td{padding:3px 4px;text-align:center}
+.habit-name-cell{text-align:right!important;font-size:10px;color:var(--text);font-weight:500;white-space:nowrap}
+.habit-chk{width:18px;height:18px;border:1.5px solid var(--border2);border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .2s;font-size:9px}
+.habit-chk.on{background:var(--green);border-color:var(--green);color:#fff}
+.habits-score{font-size:10px;color:var(--text2);text-align:center;margin-top:.5rem;font-weight:600}
+.habit-add-row{display:flex;gap:6px;margin-top:.75rem}
+.habit-inp{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);font-size:11px;padding:5px 8px;outline:none;color:var(--text)}
+.habit-inp:focus{border-color:var(--sat)}
+.btn-xs{background:var(--sat);color:#fff;border:none;border-radius:var(--r-sm);padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer}
+
+/* ══ WEEKLY TASKS LIST ══ */
+.weekly-task-row{display:flex;align-items:flex-start;gap:6px;margin-bottom:5px}
+.wtchk{width:14px;height:14px;border:1.5px solid var(--border2);border-radius:4px;cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:8px}
+.wtchk.on{background:var(--sat);border-color:var(--sat);color:#fff}
+.wt-inp{flex:1;border:none;outline:none;font-size:11px;color:var(--text);background:transparent;padding:0;line-height:1.5}
+.wt-inp::placeholder{color:var(--text3)}
+.wt-inp.done-text{text-decoration:line-through;color:var(--text3)}
+.wt-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:0;opacity:0}
+.weekly-task-row:hover .wt-del{opacity:1}
+.wt-del:hover{color:var(--red)}
+.weekly-tasks-score{font-size:10px;color:var(--text2);margin-top:.5rem;font-weight:600}
+
+/* ══ REMINDERS ══ */
+.reminder-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.rem-chk{width:14px;height:14px;border:1.5px solid var(--border2);border-radius:50%;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:8px}
+.rem-chk.on{background:var(--amber);border-color:var(--amber);color:#fff}
+.rem-inp{flex:1;border:none;outline:none;font-size:11px;color:var(--text);background:transparent;padding:0}
+.rem-inp::placeholder{color:var(--text3)}
+.rem-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:0;opacity:0}
+.reminder-row:hover .rem-del{opacity:1}
+.rem-del:hover{color:var(--red)}
+.add-row-btn{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text3);cursor:pointer;background:none;border:none;margin-top:6px;transition:color .15s}
+.add-row-btn:hover{color:var(--sat)}
+
+/* ══ WEEK NAV ══ */
+.btn-nav{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .15s}
+.btn-nav:hover{border-color:var(--sat);color:var(--sat)}
+.week-range-label{font-size:13px;font-weight:700;color:var(--text)}
+.btn-today{background:var(--sat);color:#fff;border:none;border-radius:var(--r-sm);padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .2s}
+.btn-today:hover{opacity:.88}
+
+/* ══ TOAST ══ */
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(12px);background:#1a1d2e;color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:all .3s;z-index:999;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ══ MOBILE ══ */
+@media(max-width:900px){
+  .days-grid{grid-template-columns:repeat(4,1fr)}
+  .left-panel{grid-template-columns:1fr}
+  .topbar-nav .tnav:not(.active){display:none}
 }
-.config-card { background:var(--bg2); border:1px solid var(--border2); border-radius:20px; padding:2.5rem; width:100%; max-width:480px; box-shadow:var(--shadow2); }
-.config-logo { font-size:2rem; font-weight:700; color:var(--accent); margin-bottom:.25rem; }
-.config-sub  { color:var(--text2); font-size:13px; margin-bottom:2rem; }
-.config-label{ font-size:12px; color:var(--text2); margin-bottom:6px; display:block; }
-.config-input{ width:100%; background:var(--bg3); border:1px solid var(--border2); border-radius:var(--radius-sm); color:var(--text); font-size:13px; padding:10px 14px; margin-bottom:1rem; outline:none; transition:border-color .2s; direction:ltr; }
-.config-input:focus { border-color:var(--accent); }
-.config-note { background:var(--accent-bg); border:1px solid rgba(37,99,235,.2); border-radius:var(--radius-sm); padding:12px 14px; font-size:12px; color:var(--text2); margin-bottom:1.5rem; line-height:1.8; }
-.config-note strong { color:var(--accent); }
-.config-note a { color:var(--accent); }
-.btn-primary { width:100%; background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm); padding:12px; font-size:14px; font-weight:600; cursor:pointer; transition:opacity .2s,transform .1s; }
-.btn-primary:hover { opacity:.88; }
-.config-error { color:var(--red); font-size:12px; margin-top:8px; text-align:center; }
-
-/* ── APP SHELL ── */
-#app { display:none; min-height:100vh; }
-.sidebar {
-  position:fixed; right:0; top:0; bottom:0; width:224px;
-  background:var(--bg2); border-left:1px solid var(--border);
-  display:flex; flex-direction:column; padding:1.5rem 0; z-index:100;
-  box-shadow:var(--shadow);
+@media(max-width:600px){
+  .days-grid{grid-template-columns:repeat(2,1fr)}
+  .app-body{padding:.875rem 1rem}
 }
-.sidebar-logo { padding:0 1.25rem 1.25rem; font-size:1.1rem; font-weight:700; color:var(--accent); border-bottom:1px solid var(--border); margin-bottom:1rem; display:flex; align-items:center; gap:8px; }
-.nav-item { display:flex; align-items:center; gap:10px; padding:9px 1.25rem; cursor:pointer; color:var(--text2); font-size:13px; transition:all .15s; margin:2px 8px; border-radius:var(--radius-sm); }
-.nav-item:hover { background:var(--bg3); color:var(--text); }
-.nav-item.active { background:var(--accent-bg); color:var(--accent); font-weight:600; }
-.nav-icon { font-size:16px; width:20px; text-align:center; }
-.sidebar-bottom { margin-top:auto; padding:1rem 1.25rem 0; border-top:1px solid var(--border); }
-.today-date { font-size:11px; color:var(--text3); text-align:center; padding-top:.75rem; }
-.main { margin-right:224px; padding:2rem 2.5rem; max-width:980px; }
-.page { display:none; }
-.page.active { display:block; }
-.page-title { font-size:1.35rem; font-weight:700; color:var(--text); margin-bottom:.25rem; }
-.page-sub { font-size:13px; color:var(--text2); margin-bottom:2rem; }
-
-/* ── STAT CARDS ── */
-.cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin-bottom:2rem; }
-.stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow); }
-.stat-label { font-size:11px; color:var(--text3); letter-spacing:.3px; margin-bottom:6px; }
-.stat-value { font-size:1.9rem; font-weight:700; line-height:1; }
-.stat-value.green  { color:var(--green); }
-.stat-value.amber  { color:var(--amber); }
-.stat-value.accent { color:var(--accent); }
-.stat-value.blue   { color:var(--blue); }
-.stat-value.teal   { color:var(--teal); }
-
-/* ── SECTION ── */
-.section { margin-bottom:2rem; }
-.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
-.section-title { font-size:14px; font-weight:600; color:var(--text); }
-
-/* ── TASK ITEMS ── */
-.task-list { display:flex; flex-direction:column; gap:6px; }
-.task-item { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:11px 14px; display:flex; align-items:center; gap:10px; transition:border-color .2s; box-shadow:var(--shadow); }
-.task-item:hover { border-color:var(--border2); }
-.task-item.done { opacity:.45; }
-.task-item.done .task-title { text-decoration:line-through; }
-.task-check { width:18px; height:18px; border:1.5px solid var(--border2); border-radius:50%; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all .2s; font-size:10px; }
-.task-check.checked { background:var(--green); border-color:var(--green); color:#fff; }
-.task-title { flex:1; font-size:13px; color:var(--text); }
-.task-meta { font-size:11px; color:var(--text3); white-space:nowrap; }
-.task-del { background:none; border:none; color:var(--text3); cursor:pointer; font-size:16px; padding:2px 4px; border-radius:4px; opacity:0; transition:color .15s; }
-.task-item:hover .task-del { opacity:1; }
-.task-del:hover { color:var(--red); }
-
-/* ── BADGES ── */
-.badge { font-size:10px; padding:2px 7px; border-radius:20px; font-weight:600; flex-shrink:0; }
-.badge.high     { background:var(--red-bg);   color:var(--red); }
-.badge.medium   { background:var(--amber-bg); color:var(--amber); }
-.badge.low      { background:var(--green-bg); color:var(--green); }
-.badge.work     { background:var(--blue-bg);  color:var(--blue); }
-.badge.personal { background:var(--accent-bg);color:var(--accent); }
-.badge.project  { background:var(--teal-bg);  color:var(--teal); }
-
-/* ── FORMS ── */
-.add-form { background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius); padding:1.25rem; margin-bottom:1.5rem; box-shadow:var(--shadow); }
-.form-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
-.form-row:last-child { margin-bottom:0; }
-.form-input  { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-size:13px; padding:8px 12px; outline:none; transition:border-color .2s; flex:1; min-width:100px; }
-.form-input:focus { border-color:var(--accent); }
-.form-select { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-size:13px; padding:8px 12px; outline:none; cursor:pointer; }
-.btn-add { background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm); padding:8px 16px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; transition:opacity .2s; }
-.btn-add:hover { opacity:.85; }
-.btn-sm { background:var(--bg3); color:var(--text2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:6px 12px; font-size:12px; cursor:pointer; transition:all .15s; }
-.btn-sm:hover { border-color:var(--accent); color:var(--accent); }
-
-/* ── HABITS ── */
-.habit-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
-.habit-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow); }
-.habit-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-.habit-name { font-size:14px; font-weight:600; flex:1; margin:0 8px; }
-.habit-streak { font-size:11px; color:var(--amber); background:var(--amber-bg); padding:3px 8px; border-radius:20px; font-weight:600; }
-.habit-week { display:flex; gap:5px; margin-top:8px; }
-.habit-day { flex:1; height:30px; border-radius:6px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--text3); cursor:pointer; transition:all .15s; font-weight:500; }
-.habit-day:hover { border-color:var(--accent); color:var(--accent); }
-.habit-day.done { background:var(--green); border-color:var(--green); color:#fff; }
-.habit-day.today-marker { border-color:var(--accent); color:var(--accent); font-weight:700; }
-.habit-day.done.today-marker { background:var(--accent); border-color:var(--accent); }
-
-/* ── PROJECTS ── */
-.project-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem; box-shadow:var(--shadow); }
-.project-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-.project-name { font-size:15px; font-weight:600; flex:1; }
-.progress-bar { height:5px; background:var(--bg3); border-radius:3px; overflow:hidden; margin-bottom:10px; }
-.progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--teal)); border-radius:3px; transition:width .5s ease; }
-.project-stats { display:flex; gap:1rem; font-size:12px; color:var(--text3); margin-bottom:12px; }
-
-/* ── PLANNER ── */
-.time-blocks { display:flex; flex-direction:column; gap:6px; }
-.time-block { display:flex; gap:12px; align-items:stretch; }
-.time-label { width:52px; font-size:11px; color:var(--text3); text-align:left; flex-shrink:0; padding-top:10px; direction:ltr; }
-.time-slot { flex:1; min-height:44px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px 12px; cursor:pointer; transition:all .15s; font-size:13px; display:flex; align-items:center; }
-.time-slot:hover { border-color:var(--accent); }
-.time-slot.has-event { background:var(--accent-bg); border-color:rgba(37,99,235,.25); color:var(--accent2); }
-.time-slot:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(37,99,235,.1); }
-
-/* ── CHART CONTAINERS ── */
-.chart-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow); margin-bottom:1rem; }
-.chart-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:1rem; }
-.chart-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1rem; margin-bottom:1.5rem; }
-
-/* ── HABIT TRACKER CALENDAR ── */
-.habit-tracker { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow); margin-bottom:1rem; }
-.tracker-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
-.tracker-name { font-size:14px; font-weight:600; }
-.tracker-grid { display:flex; flex-wrap:wrap; gap:4px; }
-.tracker-cell { width:14px; height:14px; border-radius:3px; background:var(--bg3); transition:background .2s; cursor:default; }
-.tracker-cell.done { background:var(--green); }
-.tracker-cell.done.level2 { background:#10b981; }
-.tracker-cell.done.level3 { background:#059669; }
-.tracker-month-labels { display:flex; gap:4px; margin-bottom:4px; font-size:10px; color:var(--text3); overflow:hidden; }
-
-/* ── MISC ── */
-.empty-state { text-align:center; padding:3rem 1rem; color:var(--text3); font-size:13px; }
-.empty-icon { font-size:2rem; margin-bottom:.5rem; opacity:.4; }
-.loading { text-align:center; padding:2rem; color:var(--text2); font-size:13px; }
-#toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(10px); background:var(--text); color:var(--bg2); padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; transition:all .3s; z-index:999; pointer-events:none; }
-#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-/* ── RESPONSIVE ── */
-@media(max-width:700px){
-  .sidebar { width:58px; }
-  .sidebar-logo .logo-text, .nav-label, .sidebar-bottom { display:none; }
-  .nav-item { justify-content:center; padding:12px 0; }
-  .main { margin-right:58px; padding:1rem; }
-  .chart-grid { grid-template-columns:1fr; }
-}
-::-webkit-scrollbar { width:6px; }
-::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 </style>
 </head>
 <body>
 
 <!-- CONFIG -->
-<div id="config-screen">
-  <div class="config-card">
-    <div class="config-logo">⚡ Life OS</div>
-    <div class="config-sub">سیستم مدیریت زندگی شخصی</div>
-    <div class="config-note">
+<div id="cfg">
+  <div class="cfg-card">
+    <div class="cfg-logo">📅 پلنر هفتگی</div>
+    <div class="cfg-sub">نسخه دیجیتال پلنر اکسل</div>
+    <div class="cfg-note">
       <strong>راه‌اندازی Supabase:</strong><br>
-      ۱. به <a href="https://supabase.com" target="_blank">supabase.com</a> برو و اکانت بساز<br>
-      ۲. یک Project جدید بساز<br>
-      ۳. از <strong>Settings → API</strong> مقادیر زیر را کپی کن
+      ۱. به <a href="https://supabase.com" target="_blank">supabase.com</a> برو → اکانت بساز<br>
+      ۲. یک Project جدید بساز → از <strong>Settings → API</strong> مقادیر را کپی کن
     </div>
-    <label class="config-label">Supabase URL</label>
-    <input class="config-input" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" />
-    <label class="config-label">Supabase Anon Key</label>
-    <input class="config-input" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." />
-    <button class="btn-primary" onclick="initSupabase()">🚀 راه‌اندازی Life OS</button>
-    <div id="config-error" class="config-error"></div>
+    <label class="cfg-label">Supabase URL</label>
+    <input class="cfg-inp" id="sb-url" placeholder="https://xxxx.supabase.co"/>
+    <label class="cfg-label">Supabase Anon Key</label>
+    <input class="cfg-inp" id="sb-key" placeholder="eyJhbGci..."/>
+    <button class="btn-main" onclick="initSB()">🚀 شروع</button>
+    <div id="cfg-err" class="cfg-err"></div>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app">
-  <nav class="sidebar">
-    <div class="sidebar-logo">
-      <span>⚡</span><span class="logo-text">Life OS</span>
+  <div class="topbar">
+    <div class="topbar-logo">📅 پلنر</div>
+    <div class="topbar-week" id="tb-week"></div>
+    <div class="topbar-nav">
+      <button class="tnav active" onclick="goView('week')" id="tnav-week">هفتگی</button>
+      <button class="tnav" onclick="goView('day')" id="tnav-day">روزانه</button>
     </div>
-    <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard"><span class="nav-icon">🏠</span><span class="nav-label">داشبورد</span></div>
-    <div class="nav-item" onclick="showPage('tasks')" id="nav-tasks"><span class="nav-icon">✅</span><span class="nav-label">تسک‌ها</span></div>
-    <div class="nav-item" onclick="showPage('habits')" id="nav-habits"><span class="nav-icon">🔥</span><span class="nav-label">عادت‌ها</span></div>
-    <div class="nav-item" onclick="showPage('projects')" id="nav-projects"><span class="nav-icon">📁</span><span class="nav-label">پروژه‌ها</span></div>
-    <div class="nav-item" onclick="showPage('planner')" id="nav-planner"><span class="nav-icon">📅</span><span class="nav-label">برنامه‌ریز</span></div>
-    <div class="sidebar-bottom">
-      <div class="today-date" id="today-label"></div>
-    </div>
-  </nav>
+  </div>
 
-  <main class="main">
-
-    <!-- DASHBOARD -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-title">سلام 👋</div>
-      <div class="page-sub" id="dash-date"></div>
-      <div class="cards-grid" id="dash-stats"></div>
-      <div class="chart-grid">
-        <div class="chart-wrap"><div class="chart-title">تسک‌های ۷ روز اخیر</div><canvas id="chart-tasks-week" height="160"></canvas></div>
-        <div class="chart-wrap"><div class="chart-title">عادت‌های این هفته</div><canvas id="chart-habits-week" height="160"></canvas></div>
+  <div class="app-body">
+    <!-- WEEK VIEW -->
+    <div id="view-week">
+      <div class="week-header">
+        <button class="btn-nav" onclick="shiftWeek(-1)">← هفته قبل</button>
+        <span class="week-range-label" id="week-range"></span>
+        <button class="btn-nav" onclick="shiftWeek(1)">هفته بعد →</button>
+        <button class="btn-today" onclick="gotoToday()">این هفته</button>
       </div>
-      <div class="section">
-        <div class="section-header"><span class="section-title">تسک‌های امروز</span><button class="btn-sm" onclick="showPage('tasks')">همه →</button></div>
-        <div id="dash-tasks" class="task-list"></div>
-      </div>
-    </div>
 
-    <!-- TASKS -->
-    <div class="page" id="page-tasks">
-      <div class="page-title">تسک‌ها</div>
-      <div class="page-sub">مدیریت وظایف کاری، شخصی و پروژه‌ای</div>
-      <div class="add-form">
-        <div class="form-row">
-          <input class="form-input" id="task-title" placeholder="عنوان تسک جدید..." style="flex:2" onkeydown="if(event.key==='Enter')addTask()" />
+      <!-- FOCUS -->
+      <div class="week-focus-wrap">
+        <span class="week-focus-label">تمرکز هفته</span>
+        <textarea class="week-focus-input" id="week-focus" rows="2" placeholder="تمرکز اصلی این هفته چیه؟" onblur="saveWeekFocus()"></textarea>
+      </div>
+
+      <!-- 7-DAY GRID -->
+      <div class="days-grid" id="days-grid"></div>
+
+      <!-- BOTTOM PANELS -->
+      <div class="left-panel">
+        <!-- HABITS -->
+        <div class="panel-card">
+          <div class="panel-title"><span class="panel-title-icon">🏃</span>عادات هفتگی</div>
+          <div id="habits-panel"></div>
         </div>
-        <div class="form-row">
-          <select class="form-select" id="task-cat" onchange="onTaskCatChange()">
-            <option value="work">💼 کاری</option>
-            <option value="personal">👤 شخصی</option>
-            <option value="project">📁 پروژه‌ای</option>
-          </select>
-          <select class="form-select" id="task-project" style="display:none"></select>
-          <select class="form-select" id="task-prio">
-            <option value="high">🔴 بالا</option>
-            <option value="medium" selected>🟡 متوسط</option>
-            <option value="low">🟢 پایین</option>
-          </select>
-          <input class="form-input" id="task-due" type="date" style="flex:0.7;direction:ltr" />
-          <button class="btn-add" onclick="addTask()">+ افزودن</button>
-        </div>
-      </div>
-      <div class="section">
-        <div class="section-header">
-          <span class="section-title">در انتظار انجام</span>
-          <div style="display:flex;gap:6px">
-            <button class="btn-sm" onclick="filterTasks('all')">همه</button>
-            <button class="btn-sm" onclick="filterTasks('work')">کاری</button>
-            <button class="btn-sm" onclick="filterTasks('personal')">شخصی</button>
-            <button class="btn-sm" onclick="filterTasks('project')">پروژه‌ای</button>
+        <!-- WEEKLY TASKS + REMINDERS -->
+        <div>
+          <div class="panel-card" style="margin-bottom:1rem">
+            <div class="panel-title"><span class="panel-title-icon">📋</span>لیست کارهای هفتگی</div>
+            <div id="weekly-tasks-panel"></div>
+            <button class="add-row-btn" onclick="addWeeklyTask()">+ کار جدید</button>
+            <div class="weekly-tasks-score" id="wt-score"></div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-title"><span class="panel-title-icon">🔔</span>یادآوری‌ها</div>
+            <div id="reminders-panel"></div>
+            <button class="add-row-btn" onclick="addReminder()">+ یادآور جدید</button>
           </div>
         </div>
-        <div id="tasks-pending" class="task-list"></div>
-      </div>
-      <div class="section">
-        <div class="section-header"><span class="section-title">انجام‌شده ✅</span></div>
-        <div id="tasks-done" class="task-list"></div>
       </div>
     </div>
 
-    <!-- HABITS -->
-    <div class="page" id="page-habits">
-      <div class="page-title">عادت‌ها</div>
-      <div class="page-sub">ردیابی و تحلیل عادت‌های روزانه</div>
-      <div class="add-form">
-        <div class="form-row">
-          <input class="form-input" id="habit-name" placeholder="نام عادت (مثلاً: مطالعه ۳۰ دقیقه)" onkeydown="if(event.key==='Enter')addHabit()" />
-          <select class="form-select" id="habit-icon">
-            <option value="📚">📚 مطالعه</option>
-            <option value="🏃">🏃 ورزش</option>
-            <option value="💧">💧 آب خوردن</option>
-            <option value="🧘">🧘 مدیتیشن</option>
-            <option value="✍️">✍️ نوشتن</option>
-            <option value="🎯">🎯 هدف</option>
-            <option value="🌙">🌙 خواب</option>
-            <option value="🥗">🥗 تغذیه</option>
-          </select>
-          <button class="btn-add" onclick="addHabit()">+ افزودن</button>
-        </div>
+    <!-- DAY VIEW -->
+    <div id="view-day" style="display:none">
+      <div class="week-header">
+        <button class="btn-nav" onclick="shiftDay(-1)">← دیروز</button>
+        <span class="week-range-label" id="day-label"></span>
+        <button class="btn-nav" onclick="shiftDay(1)">فردا →</button>
+        <button class="btn-today" onclick="gotoToday()">امروز</button>
       </div>
-
-      <!-- HABIT CHARTS -->
-      <div class="chart-grid" id="habit-charts-grid"></div>
-
-      <!-- HABIT TRACKERS (GitHub-style) -->
-      <div class="section">
-        <div class="section-header"><span class="section-title">ردیاب سالانه</span></div>
-        <div id="habit-trackers"></div>
-      </div>
-
-      <!-- HABIT WEEKLY CARDS -->
-      <div class="section">
-        <div class="section-header"><span class="section-title">ثبت امروز</span></div>
-        <div class="habit-grid" id="habits-list"></div>
-      </div>
+      <div id="day-detail"></div>
     </div>
-
-    <!-- PROJECTS -->
-    <div class="page" id="page-projects">
-      <div class="page-title">پروژه‌ها</div>
-      <div class="page-sub">پیگیری پروژه‌های بلندمدت</div>
-      <div class="add-form">
-        <div class="form-row">
-          <input class="form-input" id="proj-name" placeholder="نام پروژه..." onkeydown="if(event.key==='Enter')addProject()" />
-          <input class="form-input" id="proj-deadline" type="date" style="flex:0.6;direction:ltr" />
-          <button class="btn-add" onclick="addProject()">+ پروژه جدید</button>
-        </div>
-      </div>
-      <div class="chart-wrap" style="margin-bottom:1.5rem" id="projects-chart-wrap">
-        <div class="chart-title">پیشرفت پروژه‌ها</div>
-        <canvas id="chart-projects" height="120"></canvas>
-      </div>
-      <div id="projects-list"></div>
-    </div>
-
-    <!-- PLANNER -->
-    <div class="page" id="page-planner">
-      <div class="page-title">برنامه‌ریز روزانه</div>
-      <div class="page-sub" id="planner-date-label"></div>
-      <div style="display:flex;gap:8px;margin-bottom:1.5rem;align-items:center;flex-wrap:wrap">
-        <button class="btn-sm" onclick="changeDay(-1)">← قبلی</button>
-        <input type="date" class="form-input" id="planner-date" style="flex:0;width:160px;direction:ltr" onchange="loadPlanner()" />
-        <button class="btn-sm" onclick="changeDay(1)">بعدی →</button>
-        <button class="btn-sm" onclick="goToday()">امروز</button>
-      </div>
-      <div class="time-blocks" id="time-blocks"></div>
-    </div>
-
-  </main>
+  </div>
 </div>
+
 <div id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════
-// PERSIAN DATE UTILS
-// ══════════════════════════════════════════════
-function toJalali(gy, gm, gd) {
-  var g_d_no, j_d_no, j_np, i, j_y, j_m, j_d, jy, jm, jd;
-  var g_days_in_month = [31,28,31,30,31,30,31,31,30,31,30,31];
-  var j_days_in_month = [31,31,31,31,31,31,30,30,30,30,30,29];
-  gy -= 1600; gm -= 1; gd -= 1;
-  g_d_no = 365*gy + Math.floor((gy+3)/4) - Math.floor((gy+99)/100) + Math.floor((gy+399)/400);
-  for(i=0;i<gm;i++) g_d_no += g_days_in_month[i];
-  if(gm>1 && ((gy%4==0 && gy%100!=0) || (gy%400==0))) g_d_no++;
-  g_d_no += gd;
-  j_d_no = g_d_no - 79;
-  j_np = Math.floor(j_d_no/12053); j_d_no %= 12053;
-  jy = 979 + 33*j_np + 4*Math.floor(j_d_no/1461);
-  j_d_no %= 1461;
-  if(j_d_no >= 366){ jy += Math.floor((j_d_no-1)/365); j_d_no = (j_d_no-1)%365; }
-  for(i=0;i<11&&j_d_no>=j_days_in_month[i];i++) j_d_no -= j_days_in_month[i];
-  jm = i+1; jd = j_d_no+1;
-  return [jy, jm, jd];
+// ══════════════════════════════════════════════════════════
+// JALALI
+// ══════════════════════════════════════════════════════════
+function g2j(gy,gm,gd){
+  var g_dm=[31,28,31,30,31,30,31,31,30,31,30,31],j_dm=[31,31,31,31,31,31,30,30,30,30,30,29];
+  gy-=1600;gm-=1;gd-=1;
+  var gdn=365*gy+Math.floor((gy+3)/4)-Math.floor((gy+99)/100)+Math.floor((gy+399)/400);
+  for(var i=0;i<gm;i++)gdn+=g_dm[i];
+  if(gm>1&&((gy%4==0&&gy%100!=0)||(gy%400==0)))gdn++;
+  gdn+=gd;
+  var jdn=gdn-79,jnp=Math.floor(jdn/12053);jdn%=12053;
+  var jy=979+33*jnp+4*Math.floor(jdn/1461);jdn%=1461;
+  if(jdn>=366){jy+=Math.floor((jdn-1)/365);jdn=(jdn-1)%365;}
+  for(var i=0;i<11&&jdn>=j_dm[i];i++)jdn-=j_dm[i];
+  return[jy,i+1,jdn+1];
+}
+const JM=["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"];
+const DAYS_FA=["شنبه","یکشنبه","دوشنبه","سه‌شنبه","چهارشنبه","پنج‌شنبه","جمعه"];
+const DAYS_SHORT=["ش","ی","د","س","چ","پ","ج"];
+// js day: 0=sun,1=mon,...,6=sat
+function jsDay2idx(d){return d===0?1:d===6?0:d;}// sat=0,sun=1,mon=2,...,fri=6
+function jStr(s,f){
+  if(!s)return"";
+  var d=new Date(s+"T12:00"),r=g2j(d.getFullYear(),d.getMonth()+1,d.getDate());
+  if(f==="full"){var idx=jsDay2idx(d.getDay());return DAYS_FA[idx]+" "+r[2]+" "+JM[r[1]-1]+" "+r[0];}
+  if(f==="short")return r[2]+" "+JM[r[1]-1];
+  if(f==="mini")return r[2]+"/"+r[1];
+  return r[0]+"/"+(r[1]+"").padStart(2,"0")+"/"+(r[2]+"").padStart(2,"0");
+}
+function today(){return new Date().toISOString().split("T")[0];}
+
+// get saturday of the week containing dateStr (week starts Saturday in Iran)
+function getWeekSat(dateStr){
+  var d=new Date(dateStr+"T12:00");
+  var day=d.getDay(); // 0=sun,6=sat
+  var diff=day===6?0:day+1; // days since saturday
+  d.setDate(d.getDate()-diff);
+  return d.toISOString().split("T")[0];
+}
+function addDays(dateStr,n){
+  var d=new Date(dateStr+"T12:00");d.setDate(d.getDate()+n);
+  return d.toISOString().split("T")[0];
 }
 
-const J_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
-const J_DAYS   = ['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنج‌شنبه','جمعه'];
-const J_DAYS_SHORT = ['ش','ی','د','س','چ','پ','ج'];
-
-function jalaliStr(dateStr, opts) {
-  // dateStr = 'YYYY-MM-DD'
-  if (!dateStr) return '';
-  const d = new Date(dateStr + 'T12:00');
-  const [jy, jm, jd] = toJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
-  if (opts === 'short') return `${jd} ${J_MONTHS[jm-1]}`;
-  if (opts === 'full') {
-    const dow = J_DAYS[d.getDay() === 0 ? 6 : d.getDay()-1]; // js: 0=sun
-    return `${dow} ${jd} ${J_MONTHS[jm-1]} ${jy}`;
-  }
-  return `${jy}/${String(jm).padStart(2,'0')}/${String(jd).padStart(2,'0')}`;
-}
-
-function todayStr() { return new Date().toISOString().split('T')[0]; }
-
-function jalaliToday(full) {
-  const t = todayStr();
-  return full ? jalaliStr(t, 'full') : jalaliStr(t);
-}
-
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
 // STATE
-// ══════════════════════════════════════════════
-let sb = null;
-let allTasks = [], allHabits = [], allHabitLogs = [], allProjects = [], allProjectTasks = [];
-let plannerDate = todayStr(), plannerSlots = {}, currentFilter = 'all';
-let chartInstances = {};
+// ══════════════════════════════════════════════════════════
+let sb=null;
+let currentWeekSat=getWeekSat(today());
+let currentDay=today();
+let currentView="week";
 
-const HOURS = ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'];
+// Data cache keyed by week_start (YYYY-MM-DD of Saturday)
+let cache={
+  weeks:{},      // week_start -> {focus,id}
+  priorities:{}, // dateStr -> [{id,num,text}]
+  events:{},     // dateStr -> [{id,time,text}]
+  tasks:{},      // dateStr -> [{id,done,text}]
+  habits:[],     // [{id,name}]
+  habitLogs:{},  // week_start+habitId -> {id,done} per day: key="weekStart_habitId_dayIdx"
+  weeklyTasks:{},// week_start -> [{id,done,text}]
+  reminders:{},  // week_start -> [{id,done,text}]
+};
 
-// ══════════════════════════════════════════════
-// INIT / CONFIG
-// ══════════════════════════════════════════════
-async function initSupabase() {
-  const url = document.getElementById('sb-url').value.trim();
-  const key = document.getElementById('sb-key').value.trim();
-  if (!url || !key) { showCfgErr('لطفاً هر دو فیلد را پر کن'); return; }
-  try {
-    sb = window.supabase.createClient(url, key);
-    const {error} = await sb.from('tasks').select('id').limit(1);
-    if (error && error.code === '42P01') { showSQLGuide(); return; }
-    if (error) throw error;
-    localStorage.setItem('los_url', url);
-    localStorage.setItem('los_key', key);
-    document.getElementById('config-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    initApp();
-  } catch(e) { showCfgErr('خطا: ' + e.message); }
+// ══════════════════════════════════════════════════════════
+// SUPABASE INIT
+// ══════════════════════════════════════════════════════════
+async function initSB(){
+  var url=document.getElementById("sb-url").value.trim();
+  var key=document.getElementById("sb-key").value.trim();
+  if(!url||!key){setErr("لطفاً هر دو فیلد را پر کن");return;}
+  try{
+    sb=window.supabase.createClient(url,key);
+    var{error}=await sb.from("weeks").select("id").limit(1);
+    if(error&&error.code==="42P01"){showSQL();return;}
+    if(error)throw error;
+    localStorage.setItem("pl_url",url);localStorage.setItem("pl_key",key);
+    document.getElementById("cfg").style.display="none";
+    document.getElementById("app").style.display="block";
+    boot();
+  }catch(e){setErr("خطا: "+e.message);}
+}
+function setErr(m){document.getElementById("cfg-err").innerHTML=m;}
+function showSQL(){
+  setErr(`⚠️ جداول وجود ندارند. در <strong>Supabase → SQL Editor</strong> این SQL را اجرا کن، سپس دوباره وارد شو:<br><br><textarea style="width:100%;height:180px;font-size:9.5px;background:#0f172a;color:#7dd3fc;border:none;padding:8px;border-radius:6px;font-family:monospace;resize:none;direction:ltr;margin-top:6px">
+CREATE TABLE IF NOT EXISTS weeks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, week_start date UNIQUE NOT NULL, focus text, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS day_priorities (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, day_date date NOT NULL, num int NOT NULL, text text, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS day_events (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, day_date date NOT NULL, event_time text, text text, sort_order int DEFAULT 0, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS day_tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, day_date date NOT NULL, text text, done boolean DEFAULT false, sort_order int DEFAULT 0, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS habits (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, sort_order int DEFAULT 0, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS habit_logs (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, habit_id uuid REFERENCES habits(id) ON DELETE CASCADE, log_date date NOT NULL, done boolean DEFAULT false, UNIQUE(habit_id, log_date));
+CREATE TABLE IF NOT EXISTS weekly_tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, week_start date NOT NULL, text text, done boolean DEFAULT false, sort_order int DEFAULT 0, created_at timestamptz DEFAULT now());
+CREATE TABLE IF NOT EXISTS reminders (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, week_start date NOT NULL, text text, done boolean DEFAULT false, sort_order int DEFAULT 0, created_at timestamptz DEFAULT now());
+    </textarea>`);
 }
 
-function showCfgErr(m) { document.getElementById('config-error').textContent = m; }
-
-function showSQLGuide() {
-  document.getElementById('config-error').innerHTML =
-    `⚠️ جداول وجود ندارند. در <strong>Supabase → SQL Editor</strong> این SQL را اجرا کن:<br><br>
-    <textarea style="width:100%;height:130px;font-size:10px;background:#1e293b;color:#7dd3fc;border:none;padding:8px;border-radius:6px;font-family:monospace;resize:none;direction:ltr">
-CREATE TABLE IF NOT EXISTS tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, title text NOT NULL, category text DEFAULT 'personal', priority text DEFAULT 'medium', due_date date, done boolean DEFAULT false, project_id uuid, created_at timestamptz DEFAULT now());
-CREATE TABLE IF NOT EXISTS habits (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, icon text DEFAULT '🎯', streak int DEFAULT 0, created_at timestamptz DEFAULT now());
-CREATE TABLE IF NOT EXISTS habit_logs (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, habit_id uuid REFERENCES habits(id) ON DELETE CASCADE, log_date date NOT NULL, done boolean DEFAULT true, UNIQUE(habit_id, log_date));
-CREATE TABLE IF NOT EXISTS projects (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, deadline date, created_at timestamptz DEFAULT now());
-CREATE TABLE IF NOT EXISTS project_tasks (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, project_id uuid REFERENCES projects(id) ON DELETE CASCADE, title text NOT NULL, done boolean DEFAULT false, due_date date, priority text DEFAULT 'medium', created_at timestamptz DEFAULT now());
-CREATE TABLE IF NOT EXISTS planner_slots (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, slot_date date NOT NULL, hour text NOT NULL, content text, UNIQUE(slot_date, hour));
-    </textarea>`;
+async function boot(){
+  await loadHabits();
+  await loadWeekData(currentWeekSat);
+  renderAll();
 }
 
-function initApp() {
-  const t = todayStr();
-  document.getElementById('dash-date').textContent = jalaliStr(t, 'full');
-  document.getElementById('today-label').textContent = jalaliStr(t, 'short');
-  document.getElementById('planner-date').value = plannerDate;
-  loadAll();
+// ══════════════════════════════════════════════════════════
+// DATA LOADING
+// ══════════════════════════════════════════════════════════
+async function loadHabits(){
+  var{data}=await sb.from("habits").select("*").order("sort_order");
+  cache.habits=data||[];
 }
 
-async function loadAll() {
-  await Promise.all([loadTasks(), loadHabits(), loadProjects(), loadPlanner()]);
-  renderDashboard();
+async function loadWeekData(ws){
+  var we=addDays(ws,6);
+  var[r1,r2,r3,r4,r5,r6,r7]=await Promise.all([
+    sb.from("weeks").select("*").eq("week_start",ws).maybeSingle(),
+    sb.from("day_priorities").select("*").gte("day_date",ws).lte("day_date",we).order("num"),
+    sb.from("day_events").select("*").gte("day_date",ws).lte("day_date",we).order("sort_order"),
+    sb.from("day_tasks").select("*").gte("day_date",ws).lte("day_date",we).order("sort_order"),
+    sb.from("habit_logs").select("*").gte("log_date",ws).lte("log_date",we),
+    sb.from("weekly_tasks").select("*").eq("week_start",ws).order("sort_order"),
+    sb.from("reminders").select("*").eq("week_start",ws).order("sort_order"),
+  ]);
+  cache.weeks[ws]=r1.data||null;
+  // priorities by date
+  (r2.data||[]).forEach(p=>{
+    if(!cache.priorities[p.day_date])cache.priorities[p.day_date]=[];
+    cache.priorities[p.day_date].push(p);
+  });
+  // events by date
+  (r3.data||[]).forEach(e=>{
+    if(!cache.events[e.day_date])cache.events[e.day_date]=[];
+    cache.events[e.day_date].push(e);
+  });
+  // tasks by date
+  (r4.data||[]).forEach(t=>{
+    if(!cache.tasks[t.day_date])cache.tasks[t.day_date]=[];
+    cache.tasks[t.day_date].push(t);
+  });
+  // habit logs
+  (r5.data||[]).forEach(l=>{
+    cache.habitLogs[l.habit_id+"_"+l.log_date]={id:l.id,done:l.done};
+  });
+  cache.weeklyTasks[ws]=r6.data||[];
+  cache.reminders[ws]=r7.data||[];
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
 // NAVIGATION
-// ══════════════════════════════════════════════
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('nav-' + page).classList.add('active');
-  if (page==='dashboard') renderDashboard();
-  if (page==='tasks')     { populateProjectSelect(); renderTasks(); }
-  if (page==='habits')    renderHabits();
-  if (page==='projects')  renderProjects();
-  if (page==='planner')   renderPlanner();
+// ══════════════════════════════════════════════════════════
+function goView(v){
+  currentView=v;
+  document.getElementById("view-week").style.display=v==="week"?"block":"none";
+  document.getElementById("view-day").style.display=v==="day"?"block":"none";
+  document.querySelectorAll(".tnav").forEach(n=>n.classList.remove("active"));
+  document.getElementById("tnav-"+v).classList.add("active");
+  if(v==="day")renderDayView();
+}
+async function shiftWeek(d){
+  currentWeekSat=addDays(currentWeekSat,d*7);
+  if(!cache.weeks[currentWeekSat])await loadWeekData(currentWeekSat);
+  renderAll();
+}
+async function shiftDay(d){
+  currentDay=addDays(currentDay,d);
+  currentWeekSat=getWeekSat(currentDay);
+  if(!cache.weeks[currentWeekSat])await loadWeekData(currentWeekSat);
+  renderDayView();
+}
+async function gotoToday(){
+  var t=today();
+  currentDay=t;
+  currentWeekSat=getWeekSat(t);
+  if(!cache.weeks[currentWeekSat])await loadWeekData(currentWeekSat);
+  renderAll();
 }
 
-// ══════════════════════════════════════════════
-// TASKS
-// ══════════════════════════════════════════════
-async function loadTasks() {
-  const {data} = await sb.from('tasks').select('*').order('created_at', {ascending:false});
-  allTasks = data || [];
+// ══════════════════════════════════════════════════════════
+// RENDER ALL
+// ══════════════════════════════════════════════════════════
+function renderAll(){
+  var ws=currentWeekSat,we=addDays(ws,6);
+  var[jys,jms,jds]=g2j(...ws.split("-").map(Number));
+  var[jye,jme,jde]=g2j(...we.split("-").map(Number));
+  document.getElementById("week-range").textContent=jds+" "+JM[jms-1]+" تا "+jde+" "+JM[jme-1]+" "+jye;
+  document.getElementById("tb-week").textContent="هفته "+jds+" "+JM[jms-1];
+  // focus
+  var wdata=cache.weeks[ws];
+  document.getElementById("week-focus").value=wdata?wdata.focus||"":"";
+  renderDaysGrid();
+  renderHabitsPanel();
+  renderWeeklyTasksPanel();
+  renderRemindersPanel();
 }
 
-function onTaskCatChange() {
-  const cat = document.getElementById('task-cat').value;
-  const sel = document.getElementById('task-project');
-  sel.style.display = cat === 'project' ? '' : 'none';
-  if (cat === 'project') populateProjectSelect();
-}
-
-function populateProjectSelect() {
-  const sel = document.getElementById('task-project');
-  sel.innerHTML = allProjects.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
-}
-
-async function addTask() {
-  const title = document.getElementById('task-title').value.trim();
-  if (!title) return;
-  const cat = document.getElementById('task-cat').value;
-  const projId = cat === 'project' ? (document.getElementById('task-project').value || null) : null;
-  const task = { title, category: cat, priority: document.getElementById('task-prio').value, due_date: document.getElementById('task-due').value || null, done: false, project_id: projId };
-  const {data, error} = await sb.from('tasks').insert(task).select().single();
-  if (!error) {
-    allTasks.unshift(data);
-    document.getElementById('task-title').value = '';
-    document.getElementById('task-due').value = '';
-    renderTasks();
-    toast('تسک اضافه شد ✅');
+// ══════════════════════════════════════════════════════════
+// DAYS GRID
+// ══════════════════════════════════════════════════════════
+function renderDaysGrid(){
+  var ws=currentWeekSat,t=today();
+  var cols="";
+  for(var i=0;i<7;i++){
+    var ds=addDays(ws,i);
+    var isToday=ds===t;
+    var[jy,jm,jd]=g2j(...ds.split("-").map(Number));
+    cols+=renderDayCol(ds,i,jd,JM[jm-1],isToday);
   }
+  document.getElementById("days-grid").innerHTML=cols;
+  // attach listeners after render
+  attachDayListeners();
 }
 
-async function toggleTask(id) {
-  const t = allTasks.find(t => t.id === id); if (!t) return;
-  t.done = !t.done;
-  await sb.from('tasks').update({done: t.done}).eq('id', id);
-  renderTasks();
-  renderDashboard();
-  if (t.done) toast('آفرین! تسک انجام شد 🎉');
-}
+function renderDayCol(ds,dayIdx,jd,jmName,isToday){
+  var priorities=cache.priorities[ds]||[];
+  var events=cache.events[ds]||[];
+  var tasks=cache.tasks[ds]||[];
+  var done=tasks.filter(t=>t.done).length;
+  var pct=tasks.length?Math.round(done/tasks.length*100):0;
+  var dayColors=["var(--sat)","var(--sun)","var(--mon)","var(--tue)","var(--wed)","var(--thu)","var(--fri)"];
+  var gradColors=["#5b6af0","#f97316","#10b981","#f59e0b","#3b82f6","#8b5cf6","#ec4899"];
 
-async function deleteTask(id) {
-  allTasks = allTasks.filter(t => t.id !== id);
-  await sb.from('tasks').delete().eq('id', id);
-  renderTasks();
-  toast('تسک حذف شد');
-}
-
-function filterTasks(f) { currentFilter = f; renderTasks(); }
-
-function renderTasks() {
-  let tasks = allTasks;
-  if (currentFilter !== 'all') tasks = tasks.filter(t => t.category === currentFilter);
-  const pending = tasks.filter(t => !t.done);
-  const done    = tasks.filter(t => t.done).slice(0, 10);
-  document.getElementById('tasks-pending').innerHTML = pending.length
-    ? pending.map(taskHTML).join('')
-    : '<div class="empty-state"><div class="empty-icon">✨</div>همه تسک‌ها انجام شده!</div>';
-  document.getElementById('tasks-done').innerHTML = done.length
-    ? done.map(taskHTML).join('')
-    : '<div class="empty-state"><div class="empty-icon">📋</div>هنوز تسکی انجام نشده</div>';
-}
-
-function taskHTML(t) {
-  const catMap = {work:'💼',personal:'👤',project:'📁'};
-  const catIcon = catMap[t.category] || '';
-  const projName = t.project_id ? (allProjects.find(p=>p.id===t.project_id)||{}).name : '';
-  const dueLabel = t.due_date ? `<span class="task-meta">${jalaliStr(t.due_date,'short')}</span>` : '';
-  const projLabel = projName ? `<span class="badge project">${esc(projName)}</span>` : '';
-  return `<div class="task-item ${t.done?'done':''}">
-    <div class="task-check ${t.done?'checked':''}" onclick="toggleTask('${t.id}')">${t.done?'✓':''}</div>
-    <span class="task-title">${esc(t.title)}</span>
-    ${projLabel}
-    <span class="badge ${t.priority}">${{high:'بالا',medium:'متوسط',low:'پایین'}[t.priority]}</span>
-    <span style="font-size:13px">${catIcon}</span>
-    ${dueLabel}
-    <button class="task-del" onclick="deleteTask('${t.id}')">×</button>
-  </div>`;
-}
-
-// ══════════════════════════════════════════════
-// HABITS
-// ══════════════════════════════════════════════
-async function loadHabits() {
-  const {data:habits} = await sb.from('habits').select('*').order('created_at');
-  const startDate = new Date(); startDate.setDate(startDate.getDate()-89);
-  const {data:logs} = await sb.from('habit_logs').select('*').gte('log_date', startDate.toISOString().split('T')[0]);
-  allHabits = habits || [];
-  allHabitLogs = logs || [];
-}
-
-async function addHabit() {
-  const name = document.getElementById('habit-name').value.trim();
-  if (!name) return;
-  const {data, error} = await sb.from('habits').insert({name, icon: document.getElementById('habit-icon').value}).select().single();
-  if (!error) { allHabits.push(data); document.getElementById('habit-name').value=''; renderHabits(); toast('عادت اضافه شد 🔥'); }
-}
-
-async function toggleHabitDay(habitId, dateStr) {
-  const existing = allHabitLogs.find(l => l.habit_id===habitId && l.log_date===dateStr);
-  if (existing) {
-    await sb.from('habit_logs').delete().eq('id', existing.id);
-    allHabitLogs = allHabitLogs.filter(l => l.id !== existing.id);
-  } else {
-    const {data} = await sb.from('habit_logs').insert({habit_id:habitId, log_date:dateStr}).select().single();
-    if (data) allHabitLogs.push(data);
+  // priorities rows (5 slots)
+  var prioHTML="";
+  for(var n=1;n<=5;n++){
+    var p=priorities.find(x=>x.num===n);
+    prioHTML+=`<div class="priority-row">
+      <div class="pnum">${n}</div>
+      <textarea class="pinput" data-ds="${ds}" data-num="${n}" data-id="${p?p.id:""}" rows="1" placeholder="اولویت ${n}..." onblur="savePriority(this)" oninput="autoResize(this)">${p?esc(p.text||""):""}</textarea>
+    </div>`;
   }
-  await updateStreak(habitId);
-  renderHabits();
-  renderDashboard();
-}
 
-async function updateStreak(habitId) {
-  const logs = allHabitLogs.filter(l=>l.habit_id===habitId).map(l=>l.log_date).sort().reverse();
-  let streak = 0;
-  const today = new Date();
-  for (let i=0; i<365; i++) {
-    const d = new Date(today); d.setDate(today.getDate()-i);
-    if (logs.includes(d.toISOString().split('T')[0])) streak++; else break;
-  }
-  allHabits = allHabits.map(h => h.id===habitId ? {...h, streak} : h);
-  await sb.from('habits').update({streak}).eq('id', habitId);
-}
+  // events rows
+  var evHTML=events.map(e=>`
+    <div class="event-row" data-eid="${e.id}">
+      <input class="etime-input" value="${e.event_time||""}" placeholder="--:--" onblur="saveEvent(this,'time','${e.id}')" style="direction:ltr"/>
+      <textarea class="event-input" rows="1" data-id="${e.id}" placeholder="رویداد..." onblur="saveEvent(this,'text','${e.id}')" oninput="autoResize(this)">${esc(e.text||"")}</textarea>
+      <button class="task-del" onclick="delEvent('${e.id}','${ds}')">×</button>
+    </div>`).join("");
 
-async function deleteHabit(id) {
-  allHabits = allHabits.filter(h=>h.id!==id);
-  allHabitLogs = allHabitLogs.filter(l=>l.habit_id!==id);
-  await sb.from('habits').delete().eq('id', id);
-  renderHabits();
-  toast('عادت حذف شد');
-}
+  // tasks rows
+  var taskHTML=tasks.map(t=>`
+    <div class="task-row" data-tid="${t.id}">
+      <div class="tchk ${t.done?"on":""}" onclick="toggleDayTask('${t.id}','${ds}')"></div>
+      <textarea class="tinput ${t.done?"done-text":""}" rows="1" data-id="${t.id}" placeholder="وظیفه..." onblur="saveDayTask(this)" oninput="autoResize(this)">${esc(t.text||"")}</textarea>
+      <button class="task-del" onclick="delDayTask('${t.id}','${ds}')">×</button>
+    </div>`).join("");
 
-function renderHabits() {
-  renderHabitCharts();
-  renderHabitTrackers();
-  renderHabitWeekCards();
-}
+  var barColor=pct>=80?gradColors[dayIdx]:pct>=50?"#f59e0b":"#dc2626";
 
-function renderHabitWeekCards() {
-  const container = document.getElementById('habits-list');
-  if (!allHabits.length) { container.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🌱</div>اولین عادتت رو اضافه کن!</div>'; return; }
-  container.innerHTML = allHabits.map(h => habitCardHTML(h)).join('');
-}
-
-function habitCardHTML(h) {
-  const today = new Date();
-  const days = Array.from({length:7}, (_,i) => {
-    const d = new Date(today); d.setDate(today.getDate()-6+i);
-    const ds = d.toISOString().split('T')[0];
-    const [jy,jm,jd] = toJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
-    const dow = d.getDay(); // 0=sun
-    const label = J_DAYS_SHORT[dow===0?6:dow-1];
-    return {date:ds, label, isToday:i===6, jd};
-  });
-  const logDates = allHabitLogs.filter(l=>l.habit_id===h.id).map(l=>l.log_date);
-  const daysHTML = days.map(d => {
-    const done = logDates.includes(d.date);
-    return `<div class="habit-day ${done?'done':''} ${d.isToday?'today-marker':''}" onclick="toggleHabitDay('${h.id}','${d.date}')" title="${jalaliStr(d.date,'short')}">${d.label}</div>`;
-  }).join('');
-  return `<div class="habit-card">
-    <div class="habit-header">
-      <span style="font-size:1.3rem">${h.icon}</span>
-      <span class="habit-name">${esc(h.name)}</span>
-      <span class="habit-streak">🔥 ${h.streak}</span>
-      <button onclick="deleteHabit('${h.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;margin-right:4px">×</button>
+  return`<div class="day-col d${dayIdx} ${isToday?"today-col":""}" id="dcol-${ds}">
+    <div class="day-header" onclick="openDay('${ds}')">
+      <div class="day-name">${DAYS_FA[dayIdx]}</div>
+      <div class="day-date">${jd} ${jmName.slice(0,4)}</div>
     </div>
-    <div class="habit-week">${daysHTML}</div>
+    <div class="day-body">
+      <div class="priorities-section">
+        <div class="sec-mini-label">اولویت‌ها</div>
+        ${prioHTML}
+      </div>
+      <div class="events-section">
+        <div class="sec-mini-label">اتفاقات مهم</div>
+        ${evHTML}
+        <button class="add-event-btn" onclick="addEvent('${ds}')">+ رویداد</button>
+      </div>
+      <div class="tasks-section">
+        <div class="sec-mini-label">وظایف</div>
+        ${taskHTML}
+        <button class="add-task-btn" onclick="addDayTask('${ds}')">+ وظیفه</button>
+        ${tasks.length?`<div class="completion-bar"><div class="completion-fill" style="width:${pct}%;background:${barColor}"></div></div>`:""}
+      </div>
+    </div>
   </div>`;
 }
 
-function renderHabitCharts() {
-  destroyChart('habit-donut');
-  const grid = document.getElementById('habit-charts-grid');
-  if (!allHabits.length) { grid.innerHTML=''; return; }
-
-  // Last 30 days completion rate per habit
-  const today = new Date();
-  const last30 = Array.from({length:30}, (_,i) => { const d=new Date(today); d.setDate(today.getDate()-29+i); return d.toISOString().split('T')[0]; });
-
-  // Bar chart: daily habit completion count last 14 days
-  const last14 = last30.slice(16);
-  const barData = last14.map(dateStr => allHabitLogs.filter(l => l.log_date === dateStr).length);
-  const barLabels = last14.map(d => { const [jy,jm,jd]=toJalali(...d.split('-').map(Number)); return `${jd}/${jm}`; });
-
-  // Donut: this week's habit completion per habit
-  const weekDates = Array.from({length:7}, (_,i) => { const d=new Date(today); d.setDate(today.getDate()-6+i); return d.toISOString().split('T')[0]; });
-  const donutData = allHabits.map(h => weekDates.filter(d => allHabitLogs.find(l=>l.habit_id===h.id&&l.log_date===d)).length);
-  const maxWeek = 7;
-
-  grid.innerHTML = `
-    <div class="chart-wrap"><div class="chart-title">انجام عادت‌ها — ۱۴ روز اخیر</div><canvas id="chart-habit-bar" height="160"></canvas></div>
-    <div class="chart-wrap"><div class="chart-title">میزان انجام هر عادت این هفته</div><canvas id="chart-habit-donut" height="160"></canvas></div>
-  `;
-
-  const colors = ['#2563eb','#0d9488','#d97706','#dc2626','#7c3aed','#059669','#db2777','#ea580c'];
-
-  requestAnimationFrame(() => {
-    const barCtx = document.getElementById('chart-habit-bar');
-    if (barCtx) {
-      destroyChart('habit-bar');
-      chartInstances['habit-bar'] = new Chart(barCtx, {
-        type:'bar',
-        data:{ labels:barLabels, datasets:[{label:'تعداد عادت انجام‌شده', data:barData, backgroundColor:'rgba(37,99,235,0.15)', borderColor:'#2563eb', borderWidth:2, borderRadius:6}]},
-        options:{ plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true, max:allHabits.length||1, ticks:{stepSize:1, font:{family:'Vazirmatn'}}, grid:{color:'rgba(0,0,0,0.05)'}}, x:{ticks:{font:{family:'Vazirmatn'}}, grid:{display:false}} } }
-      });
-    }
-    const donutCtx = document.getElementById('chart-habit-donut');
-    if (donutCtx && allHabits.length) {
-      destroyChart('habit-donut');
-      chartInstances['habit-donut'] = new Chart(donutCtx, {
-        type:'doughnut',
-        data:{ labels:allHabits.map(h=>h.icon+' '+h.name), datasets:[{data:donutData, backgroundColor:colors.slice(0,allHabits.length), borderWidth:2, borderColor:'#fff'}]},
-        options:{ plugins:{ legend:{ position:'right', labels:{font:{family:'Vazirmatn',size:11}, boxWidth:12} } }, cutout:'65%' }
-      });
-    }
+function attachDayListeners(){
+  document.querySelectorAll(".pinput,.event-input,.tinput,.week-focus-input").forEach(el=>{
+    autoResize(el);
   });
 }
 
-function renderHabitTrackers() {
-  const container = document.getElementById('habit-trackers');
-  if (!allHabits.length) { container.innerHTML=''; return; }
-  const today = new Date();
-  // Show last 90 days
-  const days = Array.from({length:90}, (_,i) => { const d=new Date(today); d.setDate(today.getDate()-89+i); return d.toISOString().split('T')[0]; });
-
-  container.innerHTML = allHabits.map(h => {
-    const logSet = new Set(allHabitLogs.filter(l=>l.habit_id===h.id).map(l=>l.log_date));
-    const total = logSet.size;
-    const pct = Math.round(total/90*100);
-    const cells = days.map(d => `<div class="tracker-cell${logSet.has(d)?' done':''}" title="${jalaliStr(d,'short')}"></div>`).join('');
-    return `<div class="habit-tracker">
-      <div class="tracker-header">
-        <span>${h.icon} <strong>${esc(h.name)}</strong></span>
-        <span style="font-size:12px;color:var(--text2)">${total} روز از ۹۰ روز (${pct}%)</span>
-        <span class="habit-streak">🔥 ${h.streak}</span>
-      </div>
-      <div class="tracker-grid">${cells}</div>
-    </div>`;
-  }).join('');
+function autoResize(el){
+  el.style.height="auto";
+  el.style.height=el.scrollHeight+"px";
 }
 
-// ══════════════════════════════════════════════
-// PROJECTS
-// ══════════════════════════════════════════════
-async function loadProjects() {
-  const {data:projects} = await sb.from('projects').select('*').order('created_at');
-  const {data:ptasks}   = await sb.from('project_tasks').select('*').order('created_at');
-  allProjects = projects || [];
-  allProjectTasks = ptasks || [];
-}
-
-async function addProject() {
-  const name = document.getElementById('proj-name').value.trim();
-  if (!name) return;
-  const {data, error} = await sb.from('projects').insert({name, deadline: document.getElementById('proj-deadline').value||null}).select().single();
-  if (!error) { allProjects.push(data); document.getElementById('proj-name').value=''; document.getElementById('proj-deadline').value=''; renderProjects(); toast('پروژه اضافه شد 📁'); }
-}
-
-async function addProjectTask(projId) {
-  const titleEl = document.getElementById('ptask-title-'+projId);
-  const dueEl   = document.getElementById('ptask-due-'+projId);
-  const prioEl  = document.getElementById('ptask-prio-'+projId);
-  const title   = titleEl.value.trim();
-  if (!title) return;
-  const {data, error} = await sb.from('project_tasks').insert({project_id:projId, title, due_date: dueEl.value||null, priority: prioEl.value}).select().single();
-  if (!error) {
-    allProjectTasks.push(data);
-    // Also add to main tasks list
-    const taskData = { title, category:'project', priority: prioEl.value, due_date: dueEl.value||null, done:false, project_id: projId };
-    const {data:t2} = await sb.from('tasks').insert(taskData).select().single();
-    if (t2) allTasks.unshift(t2);
-    titleEl.value=''; dueEl.value='';
-    renderProjects();
-    toast('زیرتسک اضافه شد');
-  }
-}
-
-async function toggleProjectTask(id) {
-  const pt = allProjectTasks.find(t=>t.id===id); if (!pt) return;
-  pt.done = !pt.done;
-  await sb.from('project_tasks').update({done:pt.done}).eq('id', id);
-  // Sync with main tasks
-  const mt = allTasks.find(t => t.project_id===pt.project_id && t.title===pt.title);
-  if (mt) { mt.done = pt.done; await sb.from('tasks').update({done:pt.done}).eq('id', mt.id); }
-  renderProjects();
-}
-
-async function deleteProject(id) {
-  allProjects = allProjects.filter(p=>p.id!==id);
-  allProjectTasks = allProjectTasks.filter(t=>t.project_id!==id);
-  await sb.from('projects').delete().eq('id', id);
-  renderProjects();
-  toast('پروژه حذف شد');
-}
-
-function renderProjects() {
-  renderProjectChart();
-  const container = document.getElementById('projects-list');
-  if (!allProjects.length) { container.innerHTML='<div class="empty-state"><div class="empty-icon">🚀</div>اولین پروژه‌ات رو شروع کن!</div>'; return; }
-  container.innerHTML = allProjects.map(p => {
-    const ptasks = allProjectTasks.filter(t=>t.project_id===p.id);
-    const done   = ptasks.filter(t=>t.done).length;
-    const pct    = ptasks.length ? Math.round(done/ptasks.length*100) : 0;
-    const dl     = p.deadline ? jalaliStr(p.deadline,'short') : '';
-    return `<div class="project-card">
-      <div class="project-header">
-        <span style="font-size:1.2rem">📁</span>
-        <span class="project-name">${esc(p.name)}</span>
-        ${dl?`<span style="font-size:11px;color:var(--text3);background:var(--bg3);padding:3px 8px;border-radius:12px">📅 ${dl}</span>`:''}
-        <button onclick="deleteProject('${p.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">×</button>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-      <div class="project-stats"><span>${done}/${ptasks.length} زیرتسک</span><span>${pct}% پیشرفت</span></div>
-      <div class="task-list" style="margin-top:10px">
-        ${ptasks.map(t => `<div class="task-item ${t.done?'done':''}">
-          <div class="task-check ${t.done?'checked':''}" onclick="toggleProjectTask('${t.id}')">${t.done?'✓':''}</div>
-          <span class="task-title">${esc(t.title)}</span>
-          ${t.priority?`<span class="badge ${t.priority}">${{high:'بالا',medium:'متوسط',low:'پایین'}[t.priority]}</span>`:''}
-          ${t.due_date?`<span class="task-meta">${jalaliStr(t.due_date,'short')}</span>`:''}
-        </div>`).join('')}
-      </div>
-      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center">
-        <input class="form-input" id="ptask-title-${p.id}" placeholder="زیرتسک جدید..." style="flex:2;font-size:12px;padding:7px 10px" onkeydown="if(event.key==='Enter')addProjectTask('${p.id}')" />
-        <input class="form-input" id="ptask-due-${p.id}" type="date" style="flex:0.7;font-size:12px;padding:7px 10px;direction:ltr" />
-        <select class="form-select" id="ptask-prio-${p.id}" style="font-size:12px;padding:7px 10px">
-          <option value="high">🔴 بالا</option>
-          <option value="medium" selected>🟡 متوسط</option>
-          <option value="low">🟢 پایین</option>
-        </select>
-        <button class="btn-sm" onclick="addProjectTask('${p.id}')">+ افزودن</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function renderProjectChart() {
-  destroyChart('projects');
-  const wrap = document.getElementById('projects-chart-wrap');
-  if (!allProjects.length) { wrap.style.display='none'; return; }
-  wrap.style.display='';
-  const labels = allProjects.map(p=>p.name);
-  const data   = allProjects.map(p => {
-    const pt = allProjectTasks.filter(t=>t.project_id===p.id);
-    return pt.length ? Math.round(pt.filter(t=>t.done).length/pt.length*100) : 0;
-  });
-  requestAnimationFrame(() => {
-    const ctx = document.getElementById('chart-projects');
-    if (!ctx) return;
-    chartInstances['projects'] = new Chart(ctx, {
-      type:'bar',
-      data:{ labels, datasets:[{label:'پیشرفت %', data, backgroundColor:data.map(v=>v>70?'rgba(5,150,105,.2)':v>40?'rgba(37,99,235,.15)':'rgba(217,119,6,.15)'), borderColor:data.map(v=>v>70?'#059669':v>40?'#2563eb':'#d97706'), borderWidth:2, borderRadius:8}] },
-      options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%',font:{family:'Vazirmatn'}},grid:{color:'rgba(0,0,0,0.05)'}}, y:{ticks:{font:{family:'Vazirmatn'}},grid:{display:false}} } }
-    });
-  });
-}
-
-// ══════════════════════════════════════════════
-// PLANNER
-// ══════════════════════════════════════════════
-async function loadPlanner() {
-  const {data} = await sb.from('planner_slots').select('*').eq('slot_date', plannerDate);
-  plannerSlots = {};
-  (data||[]).forEach(s => { plannerSlots[s.hour] = {id:s.id, content:s.content}; });
-  renderPlanner();
-}
-
-function renderPlanner() {
-  const el = document.getElementById('planner-date-label');
-  if (el) el.textContent = jalaliStr(plannerDate, 'full');
-  const container = document.getElementById('time-blocks');
-  if (!container) return;
-  container.innerHTML = HOURS.map(h => {
-    const slot = plannerSlots[h];
-    const content = slot ? esc(slot.content) : '';
-    return `<div class="time-block">
-      <div class="time-label">${h}</div>
-      <div class="time-slot ${content?'has-event':''}" contenteditable="true"
-        onblur="savePlannerSlot('${h}', this.textContent.trim())"
-        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
-      >${content}</div>
-    </div>`;
-  }).join('');
-}
-
-async function savePlannerSlot(hour, content) {
-  const existing = plannerSlots[hour];
-  if (!content && !existing) return;
-  if (existing && existing.content === content) return;
-  if (!content && existing) {
-    await sb.from('planner_slots').delete().eq('id', existing.id);
-    delete plannerSlots[hour];
-  } else if (existing) {
-    await sb.from('planner_slots').update({content}).eq('id', existing.id);
-    plannerSlots[hour].content = content;
+// ══════════════════════════════════════════════════════════
+// WEEK FOCUS SAVE
+// ══════════════════════════════════════════════════════════
+async function saveWeekFocus(){
+  var ws=currentWeekSat;
+  var text=document.getElementById("week-focus").value;
+  var wdata=cache.weeks[ws];
+  if(wdata){
+    if(wdata.focus===text)return;
+    await sb.from("weeks").update({focus:text}).eq("id",wdata.id);
+    cache.weeks[ws].focus=text;
   } else {
-    const {data} = await sb.from('planner_slots').insert({slot_date:plannerDate, hour, content}).select().single();
-    if (data) plannerSlots[hour] = {id:data.id, content};
+    var{data}=await sb.from("weeks").insert({week_start:ws,focus:text}).select().single();
+    cache.weeks[ws]=data;
   }
-  renderPlanner();
+  toast("ذخیره شد");
 }
 
-function changeDay(delta) {
-  const d = new Date(plannerDate+'T12:00'); d.setDate(d.getDate()+delta);
-  plannerDate = d.toISOString().split('T')[0];
-  document.getElementById('planner-date').value = plannerDate;
-  loadPlanner();
-}
-function goToday() { plannerDate=todayStr(); document.getElementById('planner-date').value=plannerDate; loadPlanner(); }
-
-// ══════════════════════════════════════════════
-// DASHBOARD
-// ══════════════════════════════════════════════
-function renderDashboard() {
-  const today = todayStr();
-  const pending   = allTasks.filter(t=>!t.done).length;
-  const todayLogs = allHabitLogs.filter(l=>l.log_date===today);
-  const habitRate = allHabits.length ? Math.round(todayLogs.length/allHabits.length*100) : 0;
-  const doneToday = allTasks.filter(t=>t.done && t.due_date===today).length;
-  const projCount = allProjects.length;
-
-  document.getElementById('dash-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-label">تسک‌های در انتظار</div><div class="stat-value amber">${pending}</div></div>
-    <div class="stat-card"><div class="stat-label">عادت‌های امروز</div><div class="stat-value green">${todayLogs.length}/${allHabits.length}</div></div>
-    <div class="stat-card"><div class="stat-label">درصد انجام عادت‌ها</div><div class="stat-value accent">${habitRate}%</div></div>
-    <div class="stat-card"><div class="stat-label">پروژه‌های فعال</div><div class="stat-value blue">${projCount}</div></div>
-  `;
-
-  // Tasks chart — last 7 days done vs created
-  const last7 = Array.from({length:7}, (_,i) => { const d=new Date(); d.setDate(d.getDate()-6+i); return d.toISOString().split('T')[0]; });
-  const doneByDay = last7.map(d => allTasks.filter(t=>t.done && t.due_date===d).length);
-  const labels7   = last7.map(d => { const [jy,jm,jd]=toJalali(...d.split('-').map(Number)); return `${jd}/${jm}`; });
-
-  destroyChart('tasks-week');
-  requestAnimationFrame(() => {
-    const ctx1 = document.getElementById('chart-tasks-week');
-    if (ctx1) chartInstances['tasks-week'] = new Chart(ctx1, {
-      type:'line',
-      data:{ labels:labels7, datasets:[{label:'تسک انجام‌شده', data:doneByDay, borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.08)', tension:0.4, fill:true, pointBackgroundColor:'#2563eb', pointRadius:4}] },
-      options:{ plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true,ticks:{stepSize:1,font:{family:'Vazirmatn'}},grid:{color:'rgba(0,0,0,0.05)'}}, x:{ticks:{font:{family:'Vazirmatn'}},grid:{display:false}} } }
-    });
-
-    // Habits week chart
-    destroyChart('habits-week');
-    const ctx2 = document.getElementById('chart-habits-week');
-    const habWeekData = last7.map(d => allHabitLogs.filter(l=>l.log_date===d).length);
-    if (ctx2) chartInstances['habits-week'] = new Chart(ctx2, {
-      type:'bar',
-      data:{ labels:labels7, datasets:[{label:'عادت‌های انجام‌شده', data:habWeekData, backgroundColor:'rgba(13,148,136,0.15)', borderColor:'#0d9488', borderWidth:2, borderRadius:6}] },
-      options:{ plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true,max:Math.max(allHabits.length,1),ticks:{stepSize:1,font:{family:'Vazirmatn'}},grid:{color:'rgba(0,0,0,0.05)'}}, x:{ticks:{font:{family:'Vazirmatn'}},grid:{display:false}} } }
-    });
-  });
-
-  const todayTasks = allTasks.filter(t=>!t.done).slice(0,6);
-  document.getElementById('dash-tasks').innerHTML = todayTasks.length
-    ? todayTasks.map(taskHTML).join('')
-    : '<div class="empty-state"><div class="empty-icon">🎉</div>هیچ تسک بازی نداری!</div>';
+// ══════════════════════════════════════════════════════════
+// PRIORITIES
+// ══════════════════════════════════════════════════════════
+async function savePriority(el){
+  var ds=el.dataset.ds,num=parseInt(el.dataset.num),id=el.dataset.id,text=el.value.trim();
+  if(!cache.priorities[ds])cache.priorities[ds]=[];
+  if(id){
+    var item=cache.priorities[ds].find(p=>p.id===id);
+    if(item&&item.text===text)return;
+    await sb.from("day_priorities").update({text}).eq("id",id);
+    if(item)item.text=text;
+  } else {
+    if(!text)return;
+    var{data}=await sb.from("day_priorities").insert({day_date:ds,num,text}).select().single();
+    if(data){cache.priorities[ds].push(data);el.dataset.id=data.id;}
+  }
+  toast("ذخیره شد");
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+// EVENTS
+// ══════════════════════════════════════════════════════════
+async function addEvent(ds){
+  var{data}=await sb.from("day_events").insert({day_date:ds,event_time:"",text:"",sort_order:(cache.events[ds]||[]).length}).select().single();
+  if(data){if(!cache.events[ds])cache.events[ds]=[];cache.events[ds].push(data);}
+  reRenderDayCol(ds);
+}
+async function saveEvent(el,field,id){
+  var val=el.value.trim();
+  var ev=findEvent(id);
+  if(!ev||ev[field]===val)return;
+  ev[field]=val;
+  await sb.from("day_events").update({[field]:val}).eq("id",id);
+}
+async function delEvent(id,ds){
+  cache.events[ds]=(cache.events[ds]||[]).filter(e=>e.id!==id);
+  await sb.from("day_events").delete().eq("id",id);
+  reRenderDayCol(ds);toast("حذف شد");
+}
+function findEvent(id){
+  for(var ds in cache.events){var ev=cache.events[ds].find(e=>e.id===id);if(ev)return ev;}
+  return null;
+}
+
+// ══════════════════════════════════════════════════════════
+// DAY TASKS
+// ══════════════════════════════════════════════════════════
+async function addDayTask(ds){
+  var{data}=await sb.from("day_tasks").insert({day_date:ds,text:"",done:false,sort_order:(cache.tasks[ds]||[]).length}).select().single();
+  if(data){if(!cache.tasks[ds])cache.tasks[ds]=[];cache.tasks[ds].push(data);}
+  reRenderDayCol(ds);
+}
+async function saveDayTask(el){
+  var id=el.dataset.id,text=el.value.trim();
+  var t=findDayTask(id);if(!t||t.text===text)return;
+  t.text=text;
+  await sb.from("day_tasks").update({text}).eq("id",id);
+}
+async function toggleDayTask(id,ds){
+  var t=findDayTask(id);if(!t)return;
+  t.done=!t.done;
+  await sb.from("day_tasks").update({done:t.done}).eq("id",id);
+  reRenderDayCol(ds);
+  if(t.done)toast("انجام شد ✓");
+}
+async function delDayTask(id,ds){
+  cache.tasks[ds]=(cache.tasks[ds]||[]).filter(t=>t.id!==id);
+  await sb.from("day_tasks").delete().eq("id",id);
+  reRenderDayCol(ds);toast("حذف شد");
+}
+function findDayTask(id){
+  for(var ds in cache.tasks){var t=cache.tasks[ds].find(t=>t.id===id);if(t)return t;}
+  return null;
+}
+
+// ══════════════════════════════════════════════════════════
+// RE-RENDER SINGLE DAY COL
+// ══════════════════════════════════════════════════════════
+function reRenderDayCol(ds){
+  var ws=currentWeekSat;
+  var dayIdx=Math.round((new Date(ds+"T12:00")-new Date(ws+"T12:00"))/(86400000));
+  var[jy,jm,jd]=g2j(...ds.split("-").map(Number));
+  var isToday=ds===today();
+  var el=document.getElementById("dcol-"+ds);
+  if(!el)return;
+  var tmp=document.createElement("div");
+  tmp.innerHTML=renderDayCol(ds,dayIdx,jd,JM[jm-1],isToday);
+  el.replaceWith(tmp.firstElementChild);
+  document.querySelectorAll(`#dcol-${ds} .pinput,#dcol-${ds} .event-input,#dcol-${ds} .tinput`).forEach(autoResize);
+}
+
+// ══════════════════════════════════════════════════════════
+// HABITS PANEL
+// ══════════════════════════════════════════════════════════
+function renderHabitsPanel(){
+  var ws=currentWeekSat;
+  var container=document.getElementById("habits-panel");
+  if(!cache.habits.length){
+    container.innerHTML=`<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem">هنوز عادتی ثبت نشده</div>`;
+  } else {
+    var thead=`<tr><th></th>${DAYS_SHORT.map(d=>`<th>${d}</th>`).join("")}<th style="min-width:30px">%</th></tr>`;
+    var tbody=cache.habits.map(h=>{
+      var cells=Array.from({length:7},(_,i)=>{
+        var ds=addDays(ws,i);
+        var key=h.id+"_"+ds;
+        var log=cache.habitLogs[key];
+        var done=log&&log.done;
+        return`<td><div class="habit-chk ${done?"on":""}" onclick="toggleHabit('${h.id}','${ds}')">${done?"✓":""}</div></td>`;
+      }).join("");
+      var total=Array.from({length:7},(_,i)=>addDays(ws,i)).filter(ds=>{var k=h.id+"_"+ds;return cache.habitLogs[k]&&cache.habitLogs[k].done;}).length;
+      var pct=Math.round(total/7*100);
+      return`<tr>
+        <td class="habit-name-cell">${esc(h.name)}</td>
+        ${cells}
+        <td style="font-size:9px;color:var(--text2);font-weight:600">${pct}%</td>
+      </tr>`;
+    }).join("");
+    var totalDone=0,totalPossible=cache.habits.length*7;
+    cache.habits.forEach(h=>{Array.from({length:7},(_,i)=>addDays(ws,i)).forEach(ds=>{var k=h.id+"_"+ds;if(cache.habitLogs[k]&&cache.habitLogs[k].done)totalDone++;});});
+    var weekPct=totalPossible?Math.round(totalDone/totalPossible*100):0;
+    container.innerHTML=`<table class="habits-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>
+      <div class="habits-score">انجام هفته: ${totalDone}/${totalPossible} (${weekPct}%)</div>
+      <div class="habit-add-row">
+        <input class="habit-inp" id="new-habit-inp" placeholder="عادت جدید..." onkeydown="if(event.key==='Enter')addHabit()"/>
+        <button class="btn-xs" onclick="addHabit()">+</button>
+      </div>`;
+  }
+}
+
+async function toggleHabit(hid,ds){
+  var key=hid+"_"+ds;
+  var log=cache.habitLogs[key];
+  if(log){
+    log.done=!log.done;
+    await sb.from("habit_logs").update({done:log.done}).eq("id",log.id);
+  } else {
+    var{data}=await sb.from("habit_logs").insert({habit_id:hid,log_date:ds,done:true}).select().single();
+    if(data)cache.habitLogs[key]={id:data.id,done:true};
+  }
+  renderHabitsPanel();
+}
+
+async function addHabit(){
+  var inp=document.getElementById("new-habit-inp");
+  var name=inp.value.trim();if(!name)return;
+  var{data}=await sb.from("habits").insert({name,sort_order:cache.habits.length}).select().single();
+  if(data){cache.habits.push(data);inp.value="";}
+  renderHabitsPanel();toast("عادت اضافه شد");
+}
+
+// ══════════════════════════════════════════════════════════
+// WEEKLY TASKS
+// ══════════════════════════════════════════════════════════
+function renderWeeklyTasksPanel(){
+  var ws=currentWeekSat;
+  var tasks=cache.weeklyTasks[ws]||[];
+  var done=tasks.filter(t=>t.done).length;
+  var pct=tasks.length?Math.round(done/tasks.length*100):0;
+  document.getElementById("weekly-tasks-panel").innerHTML=tasks.map(t=>`
+    <div class="weekly-task-row" data-wtid="${t.id}">
+      <div class="wtchk ${t.done?"on":""}" onclick="toggleWeeklyTask('${t.id}')">${t.done?"✓":""}</div>
+      <input class="wt-inp ${t.done?"done-text":""}" value="${esc(t.text||"")}" placeholder="کار هفتگی..." onblur="saveWeeklyTask('${t.id}',this.value)" data-id="${t.id}"/>
+      <button class="wt-del" onclick="delWeeklyTask('${t.id}')">×</button>
+    </div>`).join("");
+  document.getElementById("wt-score").textContent=tasks.length?`${done}/${tasks.length} انجام شده (${pct}%)`:"";
+}
+
+async function addWeeklyTask(){
+  var ws=currentWeekSat;
+  var{data}=await sb.from("weekly_tasks").insert({week_start:ws,text:"",done:false,sort_order:(cache.weeklyTasks[ws]||[]).length}).select().single();
+  if(data){if(!cache.weeklyTasks[ws])cache.weeklyTasks[ws]=[];cache.weeklyTasks[ws].push(data);}
+  renderWeeklyTasksPanel();
+}
+async function saveWeeklyTask(id,text){
+  var ws=currentWeekSat;
+  var t=(cache.weeklyTasks[ws]||[]).find(t=>t.id===id);
+  if(!t||t.text===text)return;
+  t.text=text;
+  await sb.from("weekly_tasks").update({text}).eq("id",id);
+}
+async function toggleWeeklyTask(id){
+  var ws=currentWeekSat;
+  var t=(cache.weeklyTasks[ws]||[]).find(t=>t.id===id);if(!t)return;
+  t.done=!t.done;
+  await sb.from("weekly_tasks").update({done:t.done}).eq("id",id);
+  renderWeeklyTasksPanel();if(t.done)toast("انجام شد ✓");
+}
+async function delWeeklyTask(id){
+  var ws=currentWeekSat;
+  cache.weeklyTasks[ws]=(cache.weeklyTasks[ws]||[]).filter(t=>t.id!==id);
+  await sb.from("weekly_tasks").delete().eq("id",id);
+  renderWeeklyTasksPanel();toast("حذف شد");
+}
+
+// ══════════════════════════════════════════════════════════
+// REMINDERS
+// ══════════════════════════════════════════════════════════
+function renderRemindersPanel(){
+  var ws=currentWeekSat;
+  var rems=cache.reminders[ws]||[];
+  document.getElementById("reminders-panel").innerHTML=rems.map(r=>`
+    <div class="reminder-row" data-rid="${r.id}">
+      <div class="rem-chk ${r.done?"on":""}" onclick="toggleReminder('${r.id}')">${r.done?"✓":""}</div>
+      <input class="rem-inp" value="${esc(r.text||"")}" placeholder="یادآور..." onblur="saveReminder('${r.id}',this.value)"/>
+      <button class="rem-del" onclick="delReminder('${r.id}')">×</button>
+    </div>`).join("");
+}
+
+async function addReminder(){
+  var ws=currentWeekSat;
+  var{data}=await sb.from("reminders").insert({week_start:ws,text:"",done:false,sort_order:(cache.reminders[ws]||[]).length}).select().single();
+  if(data){if(!cache.reminders[ws])cache.reminders[ws]=[];cache.reminders[ws].push(data);}
+  renderRemindersPanel();
+}
+async function saveReminder(id,text){
+  var ws=currentWeekSat;
+  var r=(cache.reminders[ws]||[]).find(r=>r.id===id);
+  if(!r||r.text===text)return;
+  r.text=text;
+  await sb.from("reminders").update({text}).eq("id",id);
+}
+async function toggleReminder(id){
+  var ws=currentWeekSat;
+  var r=(cache.reminders[ws]||[]).find(r=>r.id===id);if(!r)return;
+  r.done=!r.done;
+  await sb.from("reminders").update({done:r.done}).eq("id",id);
+  renderRemindersPanel();
+}
+async function delReminder(id){
+  var ws=currentWeekSat;
+  cache.reminders[ws]=(cache.reminders[ws]||[]).filter(r=>r.id!==id);
+  await sb.from("reminders").delete().eq("id",id);
+  renderRemindersPanel();toast("حذف شد");
+}
+
+// ══════════════════════════════════════════════════════════
+// DAY DETAIL VIEW
+// ══════════════════════════════════════════════════════════
+function openDay(ds){
+  currentDay=ds;
+  goView("day");
+}
+function renderDayView(){
+  var ds=currentDay;
+  var[jy,jm,jd]=g2j(...ds.split("-").map(Number));
+  var dayIdx=Math.round((new Date(ds+"T12:00")-new Date(getWeekSat(ds)+"T12:00"))/(86400000));
+  document.getElementById("day-label").textContent=DAYS_FA[dayIdx]+" "+jd+" "+JM[jm-1]+" "+jy;
+
+  var priorities=cache.priorities[ds]||[];
+  var events=cache.events[ds]||[];
+  var tasks=cache.tasks[ds]||[];
+  var done=tasks.filter(t=>t.done).length;
+  var pct=tasks.length?Math.round(done/tasks.length*100):0;
+  var dayColors=["var(--sat)","var(--sun)","var(--mon)","var(--tue)","var(--wed)","var(--thu)","var(--fri)"];
+  var col=dayColors[dayIdx];
+
+  var prioHTML=Array.from({length:5},(_,i)=>{
+    var n=i+1,p=priorities.find(x=>x.num===n);
+    return`<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px">
+      <div style="width:22px;height:22px;border-radius:50%;background:${col};color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">${n}</div>
+      <textarea class="pinput" data-ds="${ds}" data-num="${n}" data-id="${p?p.id:""}" rows="1" style="flex:1;font-size:13px" placeholder="اولویت ${n}..." onblur="savePriority(this)" oninput="autoResize(this)">${p?esc(p.text||""):""}</textarea>
+    </div>`;
+  }).join("");
+
+  var evHTML=events.map(e=>`
+    <div class="event-row" style="margin-bottom:8px;background:var(--bg3);padding:8px 10px;border-radius:8px">
+      <input class="etime-input" value="${e.event_time||""}" placeholder="--:--" style="font-size:12px;direction:ltr;width:44px" onblur="saveEvent(this,'time','${e.id}')"/>
+      <textarea class="event-input" rows="1" data-id="${e.id}" style="flex:1;font-size:13px" placeholder="رویداد..." onblur="saveEvent(this,'text','${e.id}')" oninput="autoResize(this)">${esc(e.text||"")}</textarea>
+      <button class="task-del" style="opacity:1;font-size:14px" onclick="delEvent('${e.id}','${ds}');renderDayView()">×</button>
+    </div>`).join("");
+
+  var taskHTML=tasks.map(t=>`
+    <div class="task-row" style="margin-bottom:6px;padding:8px 10px;background:var(--bg3);border-radius:8px">
+      <div class="tchk ${t.done?"on":""}" style="width:16px;height:16px" onclick="toggleDayTask('${t.id}','${ds}');setTimeout(renderDayView,100)"></div>
+      <textarea class="tinput ${t.done?"done-text":""}" rows="1" data-id="${t.id}" style="flex:1;font-size:13px" placeholder="وظیفه..." onblur="saveDayTask(this)" oninput="autoResize(this)">${esc(t.text||"")}</textarea>
+      <button class="task-del" style="opacity:1;font-size:14px" onclick="delDayTask('${t.id}','${ds}');setTimeout(renderDayView,100)">×</button>
+    </div>`).join("");
+
+  document.getElementById("day-detail").innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;box-shadow:var(--sh)">
+        <div style="font-size:12px;font-weight:800;color:${col};margin-bottom:1rem;text-transform:uppercase;letter-spacing:.5px">اولویت‌های امروز</div>
+        ${prioHTML}
+      </div>
+      <div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;box-shadow:var(--sh);margin-bottom:1rem">
+          <div style="font-size:12px;font-weight:800;color:${col};margin-bottom:1rem;text-transform:uppercase;letter-spacing:.5px">اتفاقات مهم</div>
+          ${evHTML}
+          <button class="add-row-btn" onclick="addEvent('${ds}');setTimeout(renderDayView,200)">+ رویداد جدید</button>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;box-shadow:var(--sh)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="font-size:12px;font-weight:800;color:${col};text-transform:uppercase;letter-spacing:.5px">وظایف</div>
+            <div style="font-size:11px;color:var(--text2);font-weight:600">${done}/${tasks.length} (${pct}%)</div>
+          </div>
+          ${taskHTML}
+          <button class="add-row-btn" onclick="addDayTask('${ds}');setTimeout(renderDayView,200)">+ وظیفه جدید</button>
+        </div>
+      </div>
+    </div>`;
+  document.querySelectorAll("#day-detail .pinput,#day-detail .event-input,#day-detail .tinput").forEach(autoResize);
+}
+
+// ══════════════════════════════════════════════════════════
 // UTILS
-// ══════════════════════════════════════════════
-function destroyChart(key) {
-  if (chartInstances[key]) { try { chartInstances[key].destroy(); } catch(e){} delete chartInstances[key]; }
-}
+// ══════════════════════════════════════════════════════════
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+var _t;
+function toast(m){var el=document.getElementById("toast");el.textContent=m;el.classList.add("show");clearTimeout(_t);_t=setTimeout(()=>el.classList.remove("show"),2000);}
 
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-let toastTimer;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
-}
-
-window.addEventListener('load', () => {
-  const url = localStorage.getItem('los_url');
-  const key = localStorage.getItem('los_key');
-  if (url && key) {
-    document.getElementById('sb-url').value = url;
-    document.getElementById('sb-key').value = key;
-    initSupabase();
-  }
+window.addEventListener("load",()=>{
+  var url=localStorage.getItem("pl_url"),key=localStorage.getItem("pl_key");
+  if(url&&key){document.getElementById("sb-url").value=url;document.getElementById("sb-key").value=key;initSB();}
 });
 </script>
 </body>
